@@ -39,11 +39,12 @@ export async function POST(req) {
     return NextResponse.json({ text });
 
   } catch (error) {
-    console.error("Claude API error:", error);
+    console.error("FULL ERROR:", error);
+
     return NextResponse.json(
       {
-        error: "Claude request failed",
-        details: error.message,
+        error: error.message,
+        full: JSON.stringify(error, null, 2),
       },
       { status: 500 }
     );
