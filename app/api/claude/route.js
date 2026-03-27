@@ -7,12 +7,11 @@ const client = new Anthropic({
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const { systemPrompt, userMessage } = body;
+    const { systemPrompt, userMessage } = await req.json();
 
     if (!systemPrompt || !userMessage) {
       return NextResponse.json(
-        { error: "Missing systemPrompt or userMessage" },
+        { error: "Missing inputs" },
         { status: 400 }
       );
     }
@@ -21,19 +20,30 @@ export async function POST(req) {
       model: "claude-sonnet-4-20250514",
       max_tokens: 4000,
       system: systemPrompt,
-      messages: [{ role: "user", content: userMessage }],
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: userMessage,
+            },
+          ],
+        },
+      ],
     });
 
     const text =
       response.content?.map((item) => item.text || "").join("") || "";
 
-    return NextResponse.json({ text }, { status: 200 });
+    return NextResponse.json({ text });
+
   } catch (error) {
     console.error("Claude API error:", error);
     return NextResponse.json(
       {
         error: "Claude request failed",
-        details: error?.message || "Unknown error",
+        details: error.message,
       },
       { status: 500 }
     );
