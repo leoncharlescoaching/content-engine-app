@@ -324,11 +324,11 @@ async function callClaude(systemPrompt, userMessage) {
 
 const RED = "#be302c";
 const BLACK = "#0b0b0c";
-const TEXT = "#151515";
-const MUTED = "#6d6d72";
-const SOFT = "#f5f5f7";
-const BORDER = "#ececef";
-const CARD = "#ffffff";
+const TEXT = "#f5f5f7";
+const MUTED = "#a3a3aa";
+const SOFT = "#18181b";
+const BORDER = "#232327";
+const CARD = "#0b0b0c";
 const FONT = "'Inter', sans-serif";
 const MAX_WIDTH = 460;
 
@@ -336,7 +336,7 @@ const GLOBAL_STYLE = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; background: #ffffff; font-family: ${FONT}; color: ${TEXT}; }
+html, body { margin: 0; padding: 0; background: #000000; font-family: ${FONT}; color: ${TEXT}; }
 body { min-height: 100vh; }
 button, input, textarea, select { font-family: inherit; }
 button:active { transform: scale(0.99); }
@@ -524,7 +524,7 @@ function StickyActions({ buttons }) {
         transform: "translateX(-50%)",
         width: "100%",
         maxWidth: MAX_WIDTH,
-        background: "rgba(255,255,255,0.96)",
+        background: "rgba(11,11,12,0.96)",
         backdropFilter: "blur(12px)",
         borderTop: `1px solid ${BORDER}`,
         padding: "12px 14px 18px",
@@ -555,7 +555,7 @@ function Header({ onBack, eyebrow, title, right }) {
         <button
           onClick={onBack}
           style={{
-            background: SOFT,
+            background: "#121216",
             border: `1px solid ${BORDER}`,
             cursor: "pointer",
             padding: 0,
@@ -588,7 +588,7 @@ function Header({ onBack, eyebrow, title, right }) {
             style={{
               fontSize: 24,
               fontWeight: 900,
-              color: BLACK,
+              color: TEXT,
               margin: eyebrow ? "6px 0 0" : "0",
               letterSpacing: "-0.03em",
               lineHeight: 1.05,
@@ -613,12 +613,12 @@ function TextInput({ value, onChange, placeholder, rows = 4 }) {
       style={{
         width: "100%",
         padding: "18px",
-        background: "#ffffff",
+        background: "#0b0b0c",
         border: `1.5px solid ${BORDER}`,
         borderRadius: 18,
         fontSize: 15,
         lineHeight: 1.65,
-        color: BLACK,
+        color: TEXT,
         marginBottom: 14,
       }}
     />
@@ -626,7 +626,7 @@ function TextInput({ value, onChange, placeholder, rows = 4 }) {
 }
 
 function Divider() {
-  return <div style={{ height: 1, background: SOFT, margin: "18px 0" }} />;
+  return <div style={{ height: 1, background: "#121216", margin: "18px 0" }} />;
 }
 
 function ScoreBar({ score, label }) {
@@ -639,7 +639,7 @@ function ScoreBar({ score, label }) {
       style={{
         padding: "18px 18px 14px",
         marginBottom: 8,
-        background: "#ffffff",
+        background: "#0b0b0c",
         border: `1px solid ${BORDER}`,
         borderRadius: 18,
       }}
@@ -677,7 +677,7 @@ function ScoreBar({ score, label }) {
           </span>
         </div>
       </div>
-      <div style={{ height: 5, background: "#efeff2", borderRadius: 999 }}>
+      <div style={{ height: 5, background: "#1b1b20", borderRadius: 999 }}>
         <div
           style={{
             height: "100%",
@@ -698,7 +698,7 @@ function WhyBox({ text }) {
     <div
       style={{
         padding: "14px 16px",
-        background: "#fff8f8",
+        background: "#140d0d",
         border: "1px solid #f0d5d4",
         borderRadius: 16,
         marginBottom: 10,
@@ -844,7 +844,7 @@ function FormatToggle({ value, onChange }) {
     <div
       style={{
         display: "flex",
-        background: "#f4f4f6",
+        background: "#121216",
         borderRadius: 18,
         padding: 5,
         marginBottom: 16,
@@ -879,7 +879,7 @@ function SoftPanel({ children }) {
   return (
     <div
       style={{
-        background: "#ffffff",
+        background: "#0b0b0c",
         border: `1px solid ${BORDER}`,
         borderRadius: 20,
         padding: 16,
@@ -898,7 +898,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
           style={{
             marginBottom: 18,
             borderRadius: 22,
-            background: "#ffffff",
+            background: "#0b0b0c",
             border: `1px solid ${BORDER}`,
             padding: "18px 16px 16px",
           }}
@@ -933,7 +933,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
             style={{
               fontSize: 36,
               fontWeight: 900,
-              color: BLACK,
+              color: TEXT,
               margin: "0 0 8px",
               letterSpacing: "-0.04em",
               lineHeight: 0.94,
@@ -979,7 +979,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
               style={{
                 fontSize: 22,
                 fontWeight: 900,
-                color: "#fff",
+                color: "#f5f5f7",
                 margin: "0 0 6px",
                 letterSpacing: "-0.03em",
               }}
@@ -995,7 +995,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
             onClick={() => onLane("coaching")}
             style={{
               padding: "24px 20px",
-              background: "#fff",
+              background: "#0b0b0c",
               borderRadius: 20,
               border: `2px solid ${BLACK}`,
               cursor: "pointer",
@@ -1018,7 +1018,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
               style={{
                 fontSize: 22,
                 fontWeight: 900,
-                color: BLACK,
+                color: TEXT,
                 margin: "0 0 6px",
                 letterSpacing: "-0.03em",
               }}
@@ -1034,7 +1034,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
             onClick={onCopy}
             style={{
               padding: "20px 18px",
-              background: "#fff",
+              background: "#0b0b0c",
               borderRadius: 18,
               border: `1.5px solid ${BORDER}`,
               cursor: "pointer",
@@ -1061,7 +1061,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
                 style={{
                   fontSize: 18,
                   fontWeight: 900,
-                  color: BLACK,
+                  color: TEXT,
                   margin: "0 0 4px",
                   letterSpacing: "-0.02em",
                 }}
@@ -1079,7 +1079,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
             onClick={onYT}
             style={{
               padding: "20px 18px",
-              background: "#fff",
+              background: "#0b0b0c",
               borderRadius: 18,
               border: `1.5px solid ${BORDER}`,
               cursor: "pointer",
@@ -1106,7 +1106,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
                 style={{
                   fontSize: 18,
                   fontWeight: 900,
-                  color: BLACK,
+                  color: TEXT,
                   margin: "0 0 4px",
                   letterSpacing: "-0.02em",
                 }}
@@ -1124,7 +1124,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
             onClick={onSaved}
             style={{
               padding: "16px 18px",
-              background: "#fff",
+              background: "#0b0b0c",
               borderRadius: 18,
               border: `1.5px solid ${BORDER}`,
               cursor: "pointer",
@@ -1137,7 +1137,7 @@ function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 17 }}>📌</span>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: 0 }}>Saved Ideas</p>
+                <p style={{ fontSize: 14, fontWeight: 800, color: TEXT, margin: 0 }}>Saved Ideas</p>
                 <p style={{ fontSize: 12, color: "#8d8d93", margin: "2px 0 0" }}>{savedCount} saved</p>
               </div>
             </div>
@@ -1234,7 +1234,7 @@ function GeneratorScreen({ lane, onBack, onOutput, hasLastOutput }) {
             <div
               style={{
                 padding: "13px 14px",
-                background: "#fff8f8",
+                background: "#140d0d",
                 border: "1px solid #f0d5d4",
                 borderRadius: 14,
                 marginBottom: 12,
@@ -1316,7 +1316,7 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
             onClick={() => onSave(output)}
             style={{
               padding: "10px 14px",
-              background: "#fafafb",
+              background: "#121216",
               border: `1.5px solid ${BORDER}`,
               borderRadius: 12,
               cursor: "pointer",
@@ -1358,7 +1358,7 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
               style={{
                 marginBottom: 10,
                 padding: "16px 16px 14px",
-                background: "#ffffff",
+                background: "#0b0b0c",
                 border: `1px solid ${BORDER}`,
                 borderRadius: 18,
               }}
@@ -1389,7 +1389,7 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
                     {i + 1}
                   </span>
                   <div>
-                    <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: "0 0 3px" }}>{clip.title}</p>
+                    <p style={{ fontSize: 13.5, fontWeight: 800, color: TEXT, margin: "0 0 3px" }}>{clip.title}</p>
                     <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.55 }}>{clip.angle}</p>
                   </div>
                 </div>
@@ -1402,7 +1402,7 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
               style={{
                 display: "inline-block",
                 padding: "6px 11px",
-                background: "#f5f5f6",
+                background: "#121216",
                 borderRadius: 999,
                 marginBottom: 10,
                 border: `1px solid ${BORDER}`,
@@ -1611,7 +1611,7 @@ function CopySystemScreen({ onBack }) {
                 <div
                   style={{
                     padding: "13px 14px",
-                    background: "#fff8f8",
+                    background: "#140d0d",
                     border: "1px solid #f0d5d4",
                     borderRadius: 14,
                     marginBottom: 12,
@@ -1642,7 +1642,7 @@ function CopySystemScreen({ onBack }) {
                 <div
                   style={{
                     padding: "14px 16px",
-                    background: "#fff8f8",
+                    background: "#140d0d",
                     border: "1px solid #f0d5d4",
                     borderRadius: 16,
                     marginBottom: 10,
@@ -1660,7 +1660,7 @@ function CopySystemScreen({ onBack }) {
                   >
                     Strongest
                   </p>
-                  <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: "0 0 5px" }}>{output.strongest}</p>
+                  <p style={{ fontSize: 14, fontWeight: 800, color: TEXT, margin: "0 0 5px" }}>{output.strongest}</p>
                   {output.whyStrongest && (
                     <p style={{ fontSize: 12, color: "#888", margin: 0, fontStyle: "italic", lineHeight: 1.6 }}>
                       {output.whyStrongest}
@@ -1674,7 +1674,7 @@ function CopySystemScreen({ onBack }) {
                 <div
                   style={{
                     padding: "12px 14px",
-                    background: "#ffffff",
+                    background: "#0b0b0c",
                     border: `1px solid ${BORDER}`,
                     borderRadius: 16,
                     marginBottom: 10,
@@ -1731,7 +1731,7 @@ function SavedScreen({ saved, onBack, onDelete }) {
               key={i}
               style={{
                 padding: "16px 16px",
-                background: "#ffffff",
+                background: "#0b0b0c",
                 border: `1px solid ${BORDER}`,
                 borderRadius: 18,
                 marginBottom: 10,
@@ -1758,7 +1758,7 @@ function SavedScreen({ saved, onBack, onDelete }) {
                       fontSize: 10,
                       fontWeight: 700,
                       color: "#999",
-                      background: "#f0f0f0",
+                      background: "#121216",
                       padding: "4px 8px",
                       borderRadius: 999,
                     }}
@@ -1783,7 +1783,7 @@ function SavedScreen({ saved, onBack, onDelete }) {
                 </button>
               </div>
 
-              <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: "0 0 5px", lineHeight: 1.45 }}>
+              <p style={{ fontSize: 14, fontWeight: 800, color: TEXT, margin: "0 0 5px", lineHeight: 1.45 }}>
                 {item.topic || item.hook || "Saved idea"}
               </p>
 
@@ -1841,7 +1841,7 @@ function YouTubeExpansionScreen({ onBack }) {
         style={{
           fontSize: 10,
           fontWeight: 900,
-          color: "#fff",
+          color: "#f5f5f7",
           background: RED,
           width: 22,
           height: 22,
@@ -1860,7 +1860,7 @@ function YouTubeExpansionScreen({ onBack }) {
           fontWeight: 900,
           letterSpacing: "0.1em",
           textTransform: "uppercase",
-          color: BLACK,
+          color: TEXT,
         }}
       >
         {title}
@@ -1873,7 +1873,7 @@ function YouTubeExpansionScreen({ onBack }) {
       style={{
         marginBottom: 14,
         padding: "16px 16px 15px",
-        background: "#ffffff",
+        background: "#0b0b0c",
         border: `1px solid ${BORDER}`,
         borderRadius: 18,
         animation: "fadeUp 0.2s ease",
@@ -1966,7 +1966,7 @@ function YouTubeExpansionScreen({ onBack }) {
             style={{
               flex: 1,
               padding: "14px",
-              background: "#ffffff",
+              background: "#0b0b0c",
               border: `1px solid ${BORDER}`,
               borderRadius: 18,
             }}
@@ -1989,7 +1989,7 @@ function YouTubeExpansionScreen({ onBack }) {
                 {strength.toUpperCase()}
               </span>
             </div>
-            <div style={{ height: 4, background: "#efeff2", borderRadius: 999 }}>
+            <div style={{ height: 4, background: "#1b1b20", borderRadius: 999 }}>
               <div style={{ height: "100%", width: `${score}%`, background: RED, borderRadius: 999 }} />
             </div>
           </div>
@@ -2008,20 +2008,20 @@ function YouTubeExpansionScreen({ onBack }) {
         <Block>
           <YTLabel text="Angle" />
           <Body text={o.coreIdea?.angle} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Who It's For" />
           <Body text={o.coreIdea?.whoItsFor} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Main Message" />
           <Body text={o.coreIdea?.mainMessage} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Best Content Type" />
           <span
             style={{
               fontSize: 11,
               fontWeight: 900,
               color: RED,
-              background: "#fff4f4",
+              background: "#1a1010",
               padding: "5px 10px",
               borderRadius: 999,
               letterSpacing: "0.06em",
@@ -2047,7 +2047,7 @@ function YouTubeExpansionScreen({ onBack }) {
             >
               <div style={{ display: "flex", gap: 10, flex: 1 }}>
                 <span style={{ fontSize: 11, fontWeight: 900, color: RED, minWidth: 14 }}>{i + 1}</span>
-                <p style={{ fontSize: 14.5, fontWeight: 800, color: BLACK, margin: 0, lineHeight: 1.5 }}>{t}</p>
+                <p style={{ fontSize: 14.5, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.5 }}>{t}</p>
               </div>
               <button
                 onClick={() => navigator.clipboard.writeText(t)}
@@ -2080,20 +2080,20 @@ function YouTubeExpansionScreen({ onBack }) {
         <Block>
           <YTLabel text="Hook (First 10 Seconds)" />
           <Body text={o.videoStructure?.hook} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Intro" />
           <Body text={o.videoStructure?.intro} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Key Points" />
           <ListItems items={o.videoStructure?.keyPoints} />
           {o.videoStructure?.realLifeExamples?.length > 0 && (
             <>
-              <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+              <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
               <YTLabel text="Real-Life Examples" />
               <ListItems items={o.videoStructure.realLifeExamples} />
             </>
           )}
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Closing Message" />
           <Body text={o.videoStructure?.closingMessage} />
         </Block>
@@ -2106,7 +2106,7 @@ function YouTubeExpansionScreen({ onBack }) {
                 style={{
                   fontSize: 10,
                   fontWeight: 900,
-                  color: "#fff",
+                  color: "#f5f5f7",
                   background: RED,
                   width: 20,
                   height: 20,
@@ -2119,11 +2119,11 @@ function YouTubeExpansionScreen({ onBack }) {
               >
                 {i + 1}
               </span>
-              <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0 }}>{clip.idea}</p>
+              <p style={{ fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>{clip.idea}</p>
             </div>
             <YTLabel text="Hook" />
             <Body text={clip.hook} />
-            <div style={{ height: 1, background: SOFT, margin: "8px 0" }} />
+            <div style={{ height: 1, background: "#121216", margin: "8px 0" }} />
             <YTLabel text="Why It Works" />
             <p style={{ fontSize: 12.5, color: "#888", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
               {clip.whyItWorks}
@@ -2136,28 +2136,28 @@ function YouTubeExpansionScreen({ onBack }) {
           <div
             style={{
               padding: "12px 14px",
-              background: "#fff4f4",
+              background: "#1a1010",
               border: `1.5px solid ${RED}`,
               borderRadius: 14,
               marginBottom: 10,
             }}
           >
             <YTLabel text="Opening Line" />
-            <p style={{ fontSize: 15, fontWeight: 800, color: BLACK, margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: 15, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.5 }}>
               {o.firstThreeSeconds?.openingLine}
             </p>
           </div>
           <YTLabel text="Visual Idea" />
           <Body text={o.firstThreeSeconds?.visualIdea} />
-          <div style={{ height: 1, background: SOFT, margin: "8px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "8px 0" }} />
           <YTLabel text="On-Screen Text" />
           <span
             style={{
               display: "inline-block",
               fontSize: 13,
               fontWeight: 900,
-              color: BLACK,
-              background: "#f0f0f2",
+              color: TEXT,
+              background: "#121216",
               padding: "7px 12px",
               borderRadius: 10,
             }}
@@ -2170,7 +2170,7 @@ function YouTubeExpansionScreen({ onBack }) {
         <Block>
           <YTLabel text="All Hooks" />
           <ListItems items={o.hookSystem?.hooks} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
             <YTLabel text="Best Hook" />
             <span style={{ fontSize: 20, fontWeight: 900, color: RED }}>
@@ -2181,13 +2181,13 @@ function YouTubeExpansionScreen({ onBack }) {
           <div
             style={{
               padding: "11px 12px",
-              background: "#fff4f4",
+              background: "#1a1010",
               border: "1px solid #f0d5d4",
               borderRadius: 14,
               marginBottom: 10,
             }}
           >
-            <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0 }}>{o.hookSystem?.bestHook}</p>
+            <p style={{ fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>{o.hookSystem?.bestHook}</p>
           </div>
           <YTLabel text="Weakest Hook — Improved" />
           <Body text={o.hookSystem?.weakestHookImproved} />
@@ -2208,7 +2208,7 @@ function YouTubeExpansionScreen({ onBack }) {
             >
               <div style={{ display: "flex", gap: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 900, color: RED, minWidth: 14 }}>{i + 1}</span>
-                <p style={{ fontSize: 14, fontWeight: 900, color: BLACK, margin: 0 }}>{opt}</p>
+                <p style={{ fontSize: 14, fontWeight: 900, color: TEXT, margin: 0 }}>{opt}</p>
               </div>
               <button
                 onClick={() => navigator.clipboard.writeText(opt)}
@@ -2245,7 +2245,7 @@ function YouTubeExpansionScreen({ onBack }) {
                 style={{
                   fontSize: 10,
                   fontWeight: 900,
-                  color: "#fff",
+                  color: "#f5f5f7",
                   background: BLACK,
                   width: 20,
                   height: 20,
@@ -2263,7 +2263,7 @@ function YouTubeExpansionScreen({ onBack }) {
               </p>
             </div>
             <YTLabel text="Hook" />
-            <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: "0 0 6px" }}>{ep.hook}</p>
+            <p style={{ fontSize: 13.5, fontWeight: 800, color: TEXT, margin: "0 0 6px" }}>{ep.hook}</p>
             <YTLabel text="Angle" />
             <p style={{ fontSize: 13.5, color: "#555", lineHeight: 1.65, margin: "0 0 6px" }}>{ep.angle}</p>
             <YTLabel text="Idea" />
@@ -2276,20 +2276,20 @@ function YouTubeExpansionScreen({ onBack }) {
           <div
             style={{
               padding: "12px 14px",
-              background: "#fff4f4",
+              background: "#1a1010",
               border: "1px solid #f0d5d4",
               borderRadius: 14,
               marginBottom: 10,
             }}
           >
             <YTLabel text="Hook" />
-            <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: 0 }}>{o.instagramCaption?.hook}</p>
+            <p style={{ fontSize: 14, fontWeight: 800, color: TEXT, margin: 0 }}>{o.instagramCaption?.hook}</p>
           </div>
           <YTLabel text="Body" />
           <Body text={o.instagramCaption?.body} />
-          <div style={{ height: 1, background: SOFT, margin: "8px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "8px 0" }} />
           <YTLabel text="CTA" />
-          <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0 }}>{o.instagramCaption?.cta}</p>
+          <p style={{ fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0 }}>{o.instagramCaption?.cta}</p>
           <CopyLine text={`${o.instagramCaption?.hook}\n\n${o.instagramCaption?.body}\n\n${o.instagramCaption?.cta}`} />
         </Block>
 
@@ -2303,20 +2303,20 @@ function YouTubeExpansionScreen({ onBack }) {
         <Block>
           <YTLabel text="What's Weak" />
           <Body text={o.contentImprovement?.whatIsWeak} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="What to Remove" />
           <Body text={o.contentImprovement?.whatToRemove} />
-          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <div style={{ height: 1, background: "#121216", margin: "10px 0" }} />
           <YTLabel text="Stronger Version" />
           <div
             style={{
               padding: "12px 14px",
-              background: "#fff4f4",
+              background: "#1a1010",
               border: "1px solid #f0d5d4",
               borderRadius: 14,
             }}
           >
-            <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0, lineHeight: 1.68 }}>
+            <p style={{ fontSize: 13.5, fontWeight: 800, color: TEXT, margin: 0, lineHeight: 1.68 }}>
               {o.contentImprovement?.strongerVersion}
             </p>
           </div>
@@ -2368,7 +2368,7 @@ function YouTubeExpansionScreen({ onBack }) {
               <div
                 style={{
                   padding: "13px 14px",
-                  background: "#fff8f8",
+                  background: "#140d0d",
                   border: "1px solid #f0d5d4",
                   borderRadius: 14,
                   marginBottom: 12,
