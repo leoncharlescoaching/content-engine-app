@@ -332,19 +332,36 @@ async function callClaude(systemPrompt, userMessage) {
 // DESIGN TOKENS
 // ============================================================
 const RED = "#be302c";
-const BLACK = "#0a0a0a";
+const BLACK = "#0b0b0c";
+const TEXT = "#151515";
+const MUTED = "#6d6d72";
+const SOFT = "#f6f6f7";
+const BORDER = "#e9e9ec";
+const CARD = "#ffffff";
 const FONT = "'Inter', sans-serif";
+const MAX_WIDTH = 460;
 
 const GLOBAL_STYLE = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { margin: 0; padding: 0; background: #fff; font-family: ${FONT}; }
+html, body { margin: 0; padding: 0; background: #f3f3f4; font-family: ${FONT}; color: ${TEXT}; }
+body { min-height: 100vh; }
 button, input, textarea, select { font-family: inherit; }
-button:active { opacity: 0.85; transform: scale(0.99); }
+button:active { transform: scale(0.99); }
 textarea:focus, input:focus { outline: none; }
 textarea { resize: none; }
+img { display: block; max-width: 100%; }
+
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #d8d8dd; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
 `;
 
 // ============================================================
@@ -385,28 +402,57 @@ function useLoader() {
 // ============================================================
 // SHARED COMPONENTS
 // ============================================================
+function AppShell({ children, sticky = false }) {
+  return (
+    <div
+      style={{
+        maxWidth: MAX_WIDTH,
+        margin: "0 auto",
+        minHeight: "100vh",
+        background: CARD,
+        boxShadow: "0 12px 40px rgba(0,0,0,0.05)",
+        borderLeft: `1px solid ${BORDER}`,
+        borderRight: `1px solid ${BORDER}`,
+        position: "relative",
+        paddingBottom: sticky ? 98 : 36,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Spinner({ msg }) {
   return (
-    <div style={{ padding: "48px 0", textAlign: "center" }}>
-      <div style={{
-        width: 26, height: 26,
-        border: "3px solid #f0f0f0",
-        borderTop: `3px solid ${RED}`,
-        borderRadius: "50%",
-        margin: "0 auto 14px",
-        animation: "spin 0.7s linear infinite",
-      }} />
-      <p style={{ fontSize: 13, color: "#999", margin: 0 }}>{msg}</p>
+    <div style={{ padding: "56px 0 40px", textAlign: "center" }}>
+      <div
+        style={{
+          width: 28,
+          height: 28,
+          border: "3px solid #ededf0",
+          borderTop: `3px solid ${RED}`,
+          borderRadius: "50%",
+          margin: "0 auto 16px",
+          animation: "spin 0.7s linear infinite",
+        }}
+      />
+      <p style={{ fontSize: 13, color: MUTED, margin: 0, fontWeight: 600 }}>{msg}</p>
     </div>
   );
 }
 
 function SectionLabel({ text }) {
   return (
-    <p style={{
-      fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-      textTransform: "uppercase", color: "#999", margin: "0 0 8px",
-    }}>
+    <p
+      style={{
+        fontSize: 10,
+        fontWeight: 900,
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        color: "#8d8d93",
+        margin: "0 0 9px",
+      }}
+    >
       {text}
     </p>
   );
@@ -417,12 +463,18 @@ function Pill({ label, active, onClick, dark = false }) {
     <button
       onClick={onClick}
       style={{
-        padding: "8px 14px", borderRadius: 999,
-        border: `1.5px solid ${active ? (dark ? BLACK : RED) : "#e4e4e4"}`,
+        padding: "11px 16px",
+        borderRadius: 999,
+        border: `1.5px solid ${active ? (dark ? BLACK : RED) : "#d9d9de"}`,
         background: active ? (dark ? BLACK : RED) : "#fff",
-        color: active ? "#fff" : "#888",
-        fontSize: 12, fontWeight: 700, cursor: "pointer",
-        whiteSpace: "nowrap", transition: "all 0.12s", flexShrink: 0,
+        color: active ? "#fff" : "#7e7e85",
+        fontSize: 12,
+        fontWeight: 800,
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        transition: "all 0.15s ease",
+        flexShrink: 0,
+        boxShadow: active ? "0 8px 20px rgba(0,0,0,0.08)" : "none",
       }}
     >
       {label}
@@ -431,20 +483,27 @@ function Pill({ label, active, onClick, dark = false }) {
 }
 
 function BigButton({ label, onClick, variant = "red", disabled = false }) {
-  const bg = variant === "red" ? RED : variant === "black" ? BLACK : "#fafafa";
-  const col = variant === "ghost" ? "#777" : "#fff";
-  const border = variant === "ghost" ? "1.5px solid #ebebeb" : "none";
+  const bg = variant === "red" ? RED : variant === "black" ? BLACK : "#fafafb";
+  const col = variant === "ghost" ? "#6f6f75" : "#fff";
+  const border = variant === "ghost" ? `1.5px solid ${BORDER}` : "none";
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
       style={{
-        width: "100%", padding: "15px", borderRadius: 10,
-        border, background: disabled ? "#ddd" : bg,
+        width: "100%",
+        padding: "16px 18px",
+        borderRadius: 16,
+        border,
+        background: disabled ? "#ddd" : bg,
         cursor: disabled ? "not-allowed" : "pointer",
-        fontSize: 14, fontWeight: 800,
+        fontSize: 15,
+        fontWeight: 900,
         color: disabled ? "#888" : col,
-        letterSpacing: "0.02em", marginBottom: 8,
+        letterSpacing: "-0.01em",
+        marginBottom: 9,
+        boxShadow: variant === "ghost" ? "none" : "0 10px 24px rgba(0,0,0,0.08)",
       }}
     >
       {label}
@@ -457,12 +516,17 @@ function MiniButton({ label, onClick, accent = false }) {
     <button
       onClick={onClick}
       style={{
-        flex: 1, padding: "11px 0", borderRadius: 8,
-        border: accent ? "none" : "1.5px solid #ebebeb",
-        background: accent ? RED : "#fafafa",
-        cursor: "pointer", fontSize: 11, fontWeight: 800,
-        color: accent ? "#fff" : "#666",
-        letterSpacing: "0.05em", textTransform: "uppercase",
+        flex: 1,
+        padding: "12px 0",
+        borderRadius: 12,
+        border: accent ? "none" : `1.5px solid ${BORDER}`,
+        background: accent ? RED : "#fafafb",
+        cursor: "pointer",
+        fontSize: 11,
+        fontWeight: 900,
+        color: accent ? "#fff" : "#666a70",
+        letterSpacing: "0.06em",
+        textTransform: "uppercase",
       }}
     >
       {label}
@@ -472,14 +536,22 @@ function MiniButton({ label, onClick, accent = false }) {
 
 function StickyActions({ buttons }) {
   return (
-    <div style={{
-      position: "fixed", bottom: 0,
-      left: "50%", transform: "translateX(-50%)",
-      width: "100%", maxWidth: 430,
-      background: "#fff", borderTop: "1px solid #ebebeb",
-      padding: "10px 14px 24px", zIndex: 100,
-    }}>
-      <div style={{ display: "flex", gap: 7 }}>
+    <div
+      style={{
+        position: "fixed",
+        bottom: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "100%",
+        maxWidth: MAX_WIDTH,
+        background: "rgba(255,255,255,0.96)",
+        backdropFilter: "blur(12px)",
+        borderTop: `1px solid ${BORDER}`,
+        padding: "12px 14px 18px",
+        zIndex: 100,
+      }}
+    >
+      <div style={{ display: "flex", gap: 8 }}>
         {buttons.map((b) => (
           <MiniButton key={b.label} label={b.label} onClick={b.fn} accent={b.accent} />
         ))}
@@ -490,33 +562,58 @@ function StickyActions({ buttons }) {
 
 function Header({ onBack, eyebrow, title, right }) {
   return (
-    <div style={{
-      padding: "50px 20px 18px",
-      display: "flex", alignItems: "flex-start", justifyContent: "space-between",
-    }}>
-      <div style={{ display: "flex", gap: 12 }}>
+    <div
+      style={{
+        padding: "32px 20px 20px",
+        display: "flex",
+        alignItems: "flex-start",
+        justifyContent: "space-between",
+        borderBottom: `1px solid ${SOFT}`,
+      }}
+    >
+      <div style={{ display: "flex", gap: 14 }}>
         <button
           onClick={onBack}
           style={{
-            background: "none", border: "none", cursor: "pointer",
-            padding: 0, fontSize: 20, color: "#bbb", marginTop: 4, lineHeight: 1,
+            background: SOFT,
+            border: `1px solid ${BORDER}`,
+            cursor: "pointer",
+            padding: 0,
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            fontSize: 19,
+            color: "#666",
+            lineHeight: 1,
+            flexShrink: 0,
           }}
         >
           ←
         </button>
         <div>
           {eyebrow && (
-            <span style={{
-              fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-              textTransform: "uppercase", color: RED,
-            }}>
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: RED,
+              }}
+            >
               {eyebrow}
             </span>
           )}
-          <h1 style={{
-            fontSize: 22, fontWeight: 900, color: BLACK,
-            margin: eyebrow ? "3px 0 0" : "0", letterSpacing: "-0.02em",
-          }}>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 900,
+              color: BLACK,
+              margin: eyebrow ? "6px 0 0" : "0",
+              letterSpacing: "-0.03em",
+              lineHeight: 1.05,
+            }}
+          >
             {title}
           </h1>
         </div>
@@ -534,49 +631,85 @@ function TextInput({ value, onChange, placeholder, rows = 4 }) {
       placeholder={placeholder}
       rows={rows}
       style={{
-        width: "100%", padding: "14px",
-        background: "#fafafa", border: "1.5px solid #ebebeb",
-        borderRadius: 10, fontSize: 14, lineHeight: 1.65,
-        color: BLACK, marginBottom: 12,
+        width: "100%",
+        padding: "18px",
+        background: "#fbfbfc",
+        border: `1.5px solid ${BORDER}`,
+        borderRadius: 18,
+        fontSize: 15,
+        lineHeight: 1.65,
+        color: BLACK,
+        marginBottom: 14,
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
       }}
     />
   );
 }
 
 function Divider() {
-  return <div style={{ height: 1, background: "#f0f0f0", margin: "16px 0" }} />;
+  return <div style={{ height: 1, background: SOFT, margin: "18px 0" }} />;
 }
 
 function ScoreBar({ score, label }) {
   if (score === undefined || score === null) return null;
   const strength = score >= 85 ? "Strong" : score >= 70 ? "Good" : score >= 50 ? "Mid" : "Weak";
   const col = score >= 85 ? RED : score >= 70 ? BLACK : "#aaa";
+
   return (
-    <div style={{ padding: "16px 20px 12px", marginBottom: 4 }}>
-      <div style={{
-        display: "flex", justifyContent: "space-between",
-        alignItems: "baseline", marginBottom: 8,
-      }}>
-        <span style={{
-          fontSize: 10, fontWeight: 800, letterSpacing: "0.1em",
-          textTransform: "uppercase", color: "#999",
-        }}>
+    <div
+      style={{
+        padding: "18px 18px 14px",
+        marginBottom: 8,
+        background: "#fcfcfd",
+        border: `1px solid ${BORDER}`,
+        borderRadius: 18,
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          marginBottom: 10,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: "#8d8d93",
+          }}
+        >
           {label}
         </span>
         <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-          <span style={{ fontSize: 30, fontWeight: 900, color: col, letterSpacing: "-0.03em" }}>
+          <span style={{ fontSize: 34, fontWeight: 900, color: col, letterSpacing: "-0.04em" }}>
             {score}
           </span>
-          <span style={{ fontSize: 10, fontWeight: 900, color: col, letterSpacing: "0.08em" }}>
+          <span
+            style={{
+              fontSize: 10,
+              fontWeight: 900,
+              color: col,
+              letterSpacing: "0.08em",
+            }}
+          >
             {strength.toUpperCase()}
           </span>
         </div>
       </div>
-      <div style={{ height: 3, background: "#f0f0f0", borderRadius: 2 }}>
-        <div style={{
-          height: "100%", width: `${Math.max(0, Math.min(100, score))}%`,
-          background: RED, borderRadius: 2, transition: "width 0.8s ease",
-        }} />
+      <div style={{ height: 5, background: "#efeff2", borderRadius: 999 }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${Math.max(0, Math.min(100, score))}%`,
+            background: RED,
+            borderRadius: 999,
+            transition: "width 0.8s ease",
+          }}
+        />
       </div>
     </div>
   );
@@ -585,18 +718,29 @@ function ScoreBar({ score, label }) {
 function WhyBox({ text }) {
   if (!text) return null;
   return (
-    <div style={{
-      padding: "12px 16px", background: "#fff8f8",
-      border: "1px solid #f0d5d4", borderRadius: 8,
-      marginBottom: 10, animation: "fadeUp 0.2s ease",
-    }}>
-      <p style={{
-        fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-        textTransform: "uppercase", color: RED, margin: "0 0 5px",
-      }}>
+    <div
+      style={{
+        padding: "14px 16px",
+        background: "#fff8f8",
+        border: "1px solid #f0d5d4",
+        borderRadius: 16,
+        marginBottom: 10,
+        animation: "fadeUp 0.2s ease",
+      }}
+    >
+      <p
+        style={{
+          fontSize: 10,
+          fontWeight: 900,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: RED,
+          margin: "0 0 6px",
+        }}
+      >
         Why it works
       </p>
-      <p style={{ fontSize: 13, lineHeight: 1.65, color: "#555", margin: 0 }}>{text}</p>
+      <p style={{ fontSize: 13, lineHeight: 1.7, color: "#555", margin: 0 }}>{text}</p>
     </div>
   );
 }
@@ -606,14 +750,16 @@ function Card({ title, content, mono = false, accent = false }) {
   if (!content || (Array.isArray(content) && content.length === 0)) return null;
 
   const flatText = Array.isArray(content)
-    ? content.map((item, i) => {
-        if (typeof item === "object") {
-          if (item.point) return `${i + 1}. ${item.point}: ${item.detail}`;
-          if (item.title) return `${i + 1}. ${item.title} - ${item.angle || item.detail || ""}`;
-          return `${i + 1}. ${JSON.stringify(item)}`;
-        }
-        return `${i + 1}. ${item}`;
-      }).join("\n")
+    ? content
+        .map((item, i) => {
+          if (typeof item === "object") {
+            if (item.point) return `${i + 1}. ${item.point}: ${item.detail}`;
+            if (item.title) return `${i + 1}. ${item.title} - ${item.angle || item.detail || ""}`;
+            return `${i + 1}. ${JSON.stringify(item)}`;
+          }
+          return `${i + 1}. ${item}`;
+        })
+        .join("\n")
     : String(content);
 
   const copy = async () => {
@@ -623,28 +769,48 @@ function Card({ title, content, mono = false, accent = false }) {
   };
 
   return (
-    <div style={{
-      marginBottom: 10, padding: "14px 16px",
-      background: accent ? "#fff8f8" : "#fafafa",
-      border: `1px solid ${accent ? "#f0d5d4" : "#ebebeb"}`,
-      borderRadius: 8, animation: "fadeUp 0.2s ease",
-    }}>
-      <div style={{
-        display: "flex", justifyContent: "space-between",
-        alignItems: "center", marginBottom: 8,
-      }}>
-        <span style={{
-          fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-          textTransform: "uppercase", color: RED,
-        }}>
+    <div
+      style={{
+        marginBottom: 10,
+        padding: "16px 16px 15px",
+        background: accent ? "#fff8f8" : "#fcfcfd",
+        border: `1px solid ${accent ? "#f0d5d4" : BORDER}`,
+        borderRadius: 18,
+        animation: "fadeUp 0.2s ease",
+        boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 10,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            color: RED,
+          }}
+        >
           {title}
         </span>
         <button
           onClick={copy}
           style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: "0.07em",
-            textTransform: "uppercase", color: copied ? RED : "#bbb",
-            background: "none", border: "none", cursor: "pointer", padding: 0,
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: "0.07em",
+            textTransform: "uppercase",
+            color: copied ? RED : "#b1b1b7",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
           }}
         >
           {copied ? "COPIED" : "COPY"}
@@ -652,16 +818,22 @@ function Card({ title, content, mono = false, accent = false }) {
       </div>
 
       {Array.isArray(content) ? (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {content.map((item, i) => (
             <div key={i} style={{ display: "flex", gap: 10 }}>
-              <span style={{
-                fontSize: 11, fontWeight: 900, color: RED,
-                minWidth: 14, paddingTop: 2, flexShrink: 0,
-              }}>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 900,
+                  color: RED,
+                  minWidth: 14,
+                  paddingTop: 2,
+                  flexShrink: 0,
+                }}
+              >
                 {i + 1}
               </span>
-              <p style={{ fontSize: 14, lineHeight: 1.65, color: BLACK, margin: 0 }}>
+              <p style={{ fontSize: 14, lineHeight: 1.68, color: TEXT, margin: 0 }}>
                 {typeof item === "object"
                   ? item.point
                     ? `${item.point}: ${item.detail}`
@@ -674,12 +846,16 @@ function Card({ title, content, mono = false, accent = false }) {
           ))}
         </div>
       ) : (
-        <p style={{
-          lineHeight: 1.75, color: BLACK, margin: 0,
-          whiteSpace: "pre-wrap",
-          fontFamily: mono ? "'Courier New', monospace" : FONT,
-          fontSize: mono ? 13 : 14,
-        }}>
+        <p
+          style={{
+            lineHeight: 1.78,
+            color: TEXT,
+            margin: 0,
+            whiteSpace: "pre-wrap",
+            fontFamily: mono ? "'Courier New', monospace" : FONT,
+            fontSize: mono ? 13 : 14,
+          }}
+        >
           {content}
         </p>
       )}
@@ -689,20 +865,31 @@ function Card({ title, content, mono = false, accent = false }) {
 
 function FormatToggle({ value, onChange }) {
   return (
-    <div style={{
-      display: "flex", background: "#f5f5f5",
-      borderRadius: 8, padding: 4, marginBottom: 14,
-    }}>
+    <div
+      style={{
+        display: "flex",
+        background: "#f4f4f6",
+        borderRadius: 18,
+        padding: 5,
+        marginBottom: 16,
+        border: `1px solid ${BORDER}`,
+      }}
+    >
       {["short", "long"].map((f) => (
         <button
           key={f}
           onClick={() => onChange(f)}
           style={{
-            flex: 1, padding: "10px 0", borderRadius: 6, border: "none",
-            cursor: "pointer", fontSize: 13, fontWeight: 800,
+            flex: 1,
+            padding: "13px 0",
+            borderRadius: 14,
+            border: "none",
+            cursor: "pointer",
+            fontSize: 14,
+            fontWeight: 900,
             background: value === f ? BLACK : "transparent",
-            color: value === f ? "#fff" : "#888",
-            transition: "all 0.12s",
+            color: value === f ? "#fff" : "#8a8a90",
+            transition: "all 0.14s ease",
           }}
         >
           {f === "short" ? "Short Form" : "Long Form"}
@@ -712,169 +899,287 @@ function FormatToggle({ value, onChange }) {
   );
 }
 
+function SoftPanel({ children }) {
+  return (
+    <div
+      style={{
+        background: "#fcfcfd",
+        border: `1px solid ${BORDER}`,
+        borderRadius: 20,
+        padding: 16,
+        boxShadow: "0 5px 18px rgba(0,0,0,0.03)",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ============================================================
 // HOME
 // ============================================================
 function HomeScreen({ onLane, onCopy, onYT, onSaved, savedCount }) {
   return (
-    <div style={{ padding: "0 0 40px" }}>
-      <div style={{ padding: "56px 20px 28px" }}>
-        <div style={{ marginBottom: 20, textAlign: "center" }}>
+    <AppShell>
+      <div style={{ padding: "28px 18px 24px" }}>
+        <div
+          style={{
+            marginBottom: 18,
+            borderRadius: 22,
+            background: "#f7f7f8",
+            border: `1px solid ${BORDER}`,
+            padding: "18px 16px 16px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.03)",
+          }}
+        >
           <img
             src="/logo.png"
             alt="Content Engine"
-            style={{ width: "68%", maxWidth: 260, height: "auto", display: "block", margin: "0 auto" }}
+            style={{
+              width: "52%",
+              maxWidth: 190,
+              height: "auto",
+              margin: "0 auto 16px",
+            }}
           />
+
+          <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
+            <div style={{ width: 7, height: 7, background: RED, borderRadius: "50%" }} />
+            <span
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: RED,
+              }}
+            >
+              Private
+            </span>
+          </div>
+
+          <h1
+            style={{
+              fontSize: 36,
+              fontWeight: 900,
+              color: BLACK,
+              margin: "0 0 8px",
+              letterSpacing: "-0.04em",
+              lineHeight: 0.94,
+            }}
+          >
+            Content
+            <br />
+            Engine
+          </h1>
+
+          <p style={{ fontSize: 15, color: MUTED, margin: 0, lineHeight: 1.55 }}>
+            Unfiltered · Coaching · Copy.
+            <br />
+            Private. No noise.
+          </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
-          <div style={{ width: 7, height: 7, background: RED, borderRadius: "50%" }} />
-          <span style={{
-            fontSize: 10, fontWeight: 900, letterSpacing: "0.12em",
-            textTransform: "uppercase", color: RED,
-          }}>
-            Private
-          </span>
-        </div>
-
-        <h1 style={{
-          fontSize: 38, fontWeight: 900, color: BLACK,
-          margin: "0 0 6px", letterSpacing: "-0.03em", lineHeight: 1,
-        }}>
-          Content<br />Engine
-        </h1>
-
-        <p style={{ fontSize: 14, color: "#999", margin: 0, lineHeight: 1.5 }}>
-          Unfiltered · Coaching · Copy.<br />Private. No noise.
-        </p>
-      </div>
-
-      <div style={{ padding: "0 14px", display: "flex", flexDirection: "column", gap: 10 }}>
-        <button
-          onClick={() => onLane("unfiltered")}
-          style={{
-            padding: "26px 22px", background: BLACK,
-            borderRadius: 12, border: "none", cursor: "pointer",
-            textAlign: "left", display: "block",
-          }}
-        >
-          <p style={{
-            fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-            textTransform: "uppercase", color: "#555", margin: "0 0 6px",
-          }}>
-            Lane 01
-          </p>
-          <h2 style={{
-            fontSize: 24, fontWeight: 900, color: "#fff",
-            margin: "0 0 5px", letterSpacing: "-0.02em",
-          }}>
-            Unfiltered
-          </h2>
-          <p style={{ fontSize: 12, color: "#777", margin: 0, lineHeight: 1.4 }}>
-            Reaction · Opinion · Bro Did You Know
-          </p>
-        </button>
-
-        <button
-          onClick={() => onLane("coaching")}
-          style={{
-            padding: "26px 22px", background: "#fff",
-            borderRadius: 12, border: `2px solid ${BLACK}`,
-            cursor: "pointer", textAlign: "left", display: "block",
-          }}
-        >
-          <p style={{
-            fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-            textTransform: "uppercase", color: RED, margin: "0 0 6px",
-          }}>
-            Lane 02
-          </p>
-          <h2 style={{
-            fontSize: 24, fontWeight: 900, color: BLACK,
-            margin: "0 0 5px", letterSpacing: "-0.02em",
-          }}>
-            Coaching
-          </h2>
-          <p style={{ fontSize: 12, color: "#999", margin: 0, lineHeight: 1.4 }}>
-            Hooks · Reels · Scripts · Long Form
-          </p>
-        </button>
-
-        <button
-          onClick={onCopy}
-          style={{
-            padding: "22px", background: "#fff", borderRadius: 12,
-            border: "1.5px solid #e4e4e4", cursor: "pointer", textAlign: "left",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}
-        >
-          <div>
-            <p style={{
-              fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-              textTransform: "uppercase", color: "#999", margin: "0 0 5px",
-            }}>
-              Lane 03
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <button
+            onClick={() => onLane("unfiltered")}
+            style={{
+              padding: "24px 20px",
+              background: BLACK,
+              borderRadius: 20,
+              border: "none",
+              cursor: "pointer",
+              textAlign: "left",
+              boxShadow: "0 12px 28px rgba(0,0,0,0.12)",
+            }}
+          >
+            <p
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#7f7f86",
+                margin: "0 0 8px",
+              }}
+            >
+              Lane 01
             </p>
-            <h2 style={{
-              fontSize: 22, fontWeight: 900, color: BLACK,
-              margin: "0 0 4px", letterSpacing: "-0.02em",
-            }}>
-              Copy System
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 900,
+                color: "#fff",
+                margin: "0 0 6px",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              Unfiltered
             </h2>
-            <p style={{ fontSize: 12, color: "#999", margin: 0 }}>
-              Captions · CTAs · Hook Refiner · Rewrite · Long Form
+            <p style={{ fontSize: 13, color: "#9a9aa1", margin: 0, lineHeight: 1.45 }}>
+              Reaction · Opinion · Bro Did You Know
             </p>
-          </div>
-          <span style={{ fontSize: 20, color: "#ddd", marginLeft: 10 }}>›</span>
-        </button>
+          </button>
 
-        <button
-          onClick={onYT}
-          style={{
-            padding: "22px", background: "#fff", borderRadius: 12,
-            border: "1.5px solid #e4e4e4", cursor: "pointer", textAlign: "left",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}
-        >
-          <div>
-            <p style={{
-              fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-              textTransform: "uppercase", color: "#999", margin: "0 0 5px",
-            }}>
-              Lane 04
+          <button
+            onClick={() => onLane("coaching")}
+            style={{
+              padding: "24px 20px",
+              background: "#fff",
+              borderRadius: 20,
+              border: `2px solid ${BLACK}`,
+              cursor: "pointer",
+              textAlign: "left",
+              boxShadow: "0 8px 22px rgba(0,0,0,0.04)",
+            }}
+          >
+            <p
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: RED,
+                margin: "0 0 8px",
+              }}
+            >
+              Lane 02
             </p>
-            <h2 style={{
-              fontSize: 22, fontWeight: 900, color: BLACK,
-              margin: "0 0 4px", letterSpacing: "-0.02em",
-            }}>
-              YouTube Expansion
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 900,
+                color: BLACK,
+                margin: "0 0 6px",
+                letterSpacing: "-0.03em",
+              }}
+            >
+              Coaching
             </h2>
-            <p style={{ fontSize: 12, color: "#999", margin: 0 }}>
-              Full breakdown · Titles · Clips · Series · Scores
+            <p style={{ fontSize: 13, color: MUTED, margin: 0, lineHeight: 1.45 }}>
+              Hooks · Reels · Scripts · Long Form
             </p>
-          </div>
-          <span style={{ fontSize: 20, color: "#ddd", marginLeft: 10 }}>›</span>
-        </button>
+          </button>
 
-        <button
-          onClick={onSaved}
-          style={{
-            padding: "16px 18px", background: "#fafafa", borderRadius: 10,
-            border: "1px solid #ebebeb", cursor: "pointer", textAlign: "left",
-            display: "flex", alignItems: "center", justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 18 }}>🔖</span>
+          <button
+            onClick={onCopy}
+            style={{
+              padding: "20px 18px",
+              background: "#fff",
+              borderRadius: 18,
+              border: `1.5px solid ${BORDER}`,
+              cursor: "pointer",
+              textAlign: "left",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 5px 18px rgba(0,0,0,0.03)",
+            }}
+          >
             <div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: 0 }}>Saved Ideas</p>
-              <p style={{ fontSize: 12, color: "#999", margin: 0 }}>{savedCount} saved</p>
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "#9b9ba1",
+                  margin: "0 0 6px",
+                }}
+              >
+                Lane 03
+              </p>
+              <h2
+                style={{
+                  fontSize: 18,
+                  fontWeight: 900,
+                  color: BLACK,
+                  margin: "0 0 4px",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Copy System
+              </h2>
+              <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.45 }}>
+                Captions · CTAs · Hook Refiner · Rewrite · Long Form
+              </p>
             </div>
-          </div>
-          <span style={{ fontSize: 18, color: "#ddd" }}>›</span>
-        </button>
+            <span style={{ fontSize: 20, color: "#d0d0d6", marginLeft: 10 }}>›</span>
+          </button>
+
+          <button
+            onClick={onYT}
+            style={{
+              padding: "20px 18px",
+              background: "#fff",
+              borderRadius: 18,
+              border: `1.5px solid ${BORDER}`,
+              cursor: "pointer",
+              textAlign: "left",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              boxShadow: "0 5px 18px rgba(0,0,0,0.03)",
+            }}
+          >
+            <div>
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "#9b9ba1",
+                  margin: "0 0 6px",
+                }}
+              >
+                Lane 04
+              </p>
+              <h2
+                style={{
+                  fontSize: 18,
+                  fontWeight: 900,
+                  color: BLACK,
+                  margin: "0 0 4px",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                YouTube Expansion
+              </h2>
+              <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.45 }}>
+                Full breakdown · Titles · Clips · Series · Scores
+              </p>
+            </div>
+            <span style={{ fontSize: 20, color: "#d0d0d6", marginLeft: 10 }}>›</span>
+          </button>
+
+          <button
+            onClick={onSaved}
+            style={{
+              padding: "16px 18px",
+              background: "#fff",
+              borderRadius: 18,
+              border: `1.5px solid ${BORDER}`,
+              cursor: "pointer",
+              textAlign: "left",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              boxShadow: "0 5px 18px rgba(0,0,0,0.03)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 17 }}>📌</span>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: 0 }}>Saved Ideas</p>
+                <p style={{ fontSize: 12, color: "#8d8d93", margin: "2px 0 0" }}>{savedCount} saved</p>
+              </div>
+            </div>
+            <span style={{ fontSize: 18, color: "#d0d0d6" }}>›</span>
+          </button>
+        </div>
       </div>
-    </div>
+    </AppShell>
   );
 }
 
@@ -901,7 +1206,10 @@ function GeneratorScreen({ lane, onBack, onOutput, hasLastOutput }) {
     try {
       const result = await callClaude(getPrompt(), input || "Generate a strong idea for this lane and format.");
       stop();
-      if (result.error) { setError(result.error); return; }
+      if (result.error) {
+        setError(result.details ? `${result.error}${result.details ? `: ${result.details}` : ""}` : result.error);
+        return;
+      }
       onOutput(result, lane, format);
     } catch {
       stop();
@@ -916,7 +1224,10 @@ function GeneratorScreen({ lane, onBack, onOutput, hasLastOutput }) {
       const prompt = isCoaching ? PROMPTS.surpriseMeCoaching : PROMPTS.surpriseMeUnfiltered;
       const result = await callClaude(prompt, "Surprise me with a strong content idea.");
       stop();
-      if (result.error) { setError(result.error); return; }
+      if (result.error) {
+        setError(result.details ? `${result.error}${result.details ? `: ${result.details}` : ""}` : result.error);
+        return;
+      }
       onOutput(result, lane, format);
     } catch {
       stop();
@@ -925,59 +1236,71 @@ function GeneratorScreen({ lane, onBack, onOutput, hasLastOutput }) {
   };
 
   return (
-    <div style={{ paddingBottom: 40 }}>
-      <Header
-        onBack={onBack}
-        eyebrow={lane.toUpperCase()}
-        title={isCoaching ? "Coaching Generator" : "Unfiltered Generator"}
-      />
-      <div style={{ padding: "0 14px" }}>
-        <FormatToggle value={format} onChange={setFormat} />
+    <AppShell>
+      <Header onBack={onBack} eyebrow={lane.toUpperCase()} title={isCoaching ? "Coaching Generator" : "Unfiltered Generator"} />
 
-        {!isCoaching && (
-          <div style={{ display: "flex", gap: 7, marginBottom: 14, overflowX: "auto", paddingBottom: 2 }}>
-            {[
-              { id: "general", label: "General" },
-              { id: "bro", label: "Bro Did You Know" },
-              { id: "reaction", label: "Reaction" },
-              { id: "opinion", label: "Opinion" },
-            ].map((ct) => (
-              <Pill key={ct.id} label={ct.label} active={contentType === ct.id} dark onClick={() => setContentType(ct.id)} />
-            ))}
-          </div>
-        )}
+      <div style={{ padding: "18px 14px 0" }}>
+        <SoftPanel>
+          <FormatToggle value={format} onChange={setFormat} />
 
-        <TextInput
-          value={input}
-          onChange={setInput}
-          placeholder={
-            isCoaching
-              ? "Topic or angle... e.g. dads who skip the gym because they're tired"
-              : "Fact, topic, or idea... e.g. honey never spoils"
-          }
-        />
-
-        {error && <p style={{ fontSize: 13, color: RED, marginBottom: 10 }}>{error}</p>}
-
-        {loading ? (
-          <Spinner msg={msg} />
-        ) : (
-          <>
-            <BigButton label="Generate →" onClick={run} />
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: hasLastOutput ? "1fr 1fr" : "1fr",
-              gap: 8,
-            }}>
-              <BigButton label="✦ Surprise Me" onClick={surprise} variant="black" />
-              {hasLastOutput && (
-                <BigButton label="← Last Output" onClick={() => onOutput(null, null, null, true)} variant="ghost" />
-              )}
+          {!isCoaching && (
+            <div style={{ display: "flex", gap: 8, marginBottom: 16, overflowX: "auto", paddingBottom: 2 }}>
+              {[
+                { id: "general", label: "General" },
+                { id: "bro", label: "Bro Did You Know" },
+                { id: "reaction", label: "Reaction" },
+                { id: "opinion", label: "Opinion" },
+              ].map((ct) => (
+                <Pill key={ct.id} label={ct.label} active={contentType === ct.id} dark onClick={() => setContentType(ct.id)} />
+              ))}
             </div>
-          </>
-        )}
+          )}
+
+          <TextInput
+            value={input}
+            onChange={setInput}
+            placeholder={
+              isCoaching
+                ? "Topic or angle... e.g. dads who skip the gym because they're tired"
+                : "Fact, topic, or idea... e.g. honey never spoils"
+            }
+            rows={6}
+          />
+
+          {error && (
+            <div
+              style={{
+                padding: "13px 14px",
+                background: "#fff8f8",
+                border: "1px solid #f0d5d4",
+                borderRadius: 14,
+                marginBottom: 12,
+              }}
+            >
+              <p style={{ fontSize: 13, color: RED, margin: 0, lineHeight: 1.55 }}>{error}</p>
+            </div>
+          )}
+
+          {loading ? (
+            <Spinner msg={msg} />
+          ) : (
+            <>
+              <BigButton label="Generate →" onClick={run} />
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: hasLastOutput ? "1fr 1fr" : "1fr",
+                  gap: 8,
+                }}
+              >
+                <BigButton label="✦ Surprise Me" onClick={surprise} variant="black" />
+                {hasLastOutput && <BigButton label="← Last Output" onClick={() => onOutput(null, null, null, true)} variant="ghost" />}
+              </div>
+            </>
+          )}
+        </SoftPanel>
       </div>
-    </div>
+    </AppShell>
   );
 }
 
@@ -1005,14 +1328,17 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
       .filter(([k]) => !["viralScore", "conversionScore"].includes(k))
       .map(([k, v]) => {
         const body = Array.isArray(v)
-          ? v.map((i, idx) =>
-              typeof i === "object"
-                ? `${idx + 1}. ${i.title || i.point || JSON.stringify(i)}`
-                : `${idx + 1}. ${i}`
-            ).join("\n")
+          ? v
+              .map((i, idx) =>
+                typeof i === "object"
+                  ? `${idx + 1}. ${i.title || i.point || JSON.stringify(i)}`
+                  : `${idx + 1}. ${i}`
+              )
+              .join("\n")
           : v;
         return `${k.toUpperCase()}\n${body}`;
-      }).join("\n\n");
+      })
+      .join("\n\n");
     await navigator.clipboard.writeText(lines);
   };
 
@@ -1020,7 +1346,7 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
   const score = output.viralScore || output.conversionScore;
 
   return (
-    <div style={{ paddingBottom: 90 }}>
+    <AppShell sticky>
       <Header
         onBack={onBack}
         eyebrow={`${lane?.toUpperCase()} · ${format?.toUpperCase()}`}
@@ -1029,10 +1355,15 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
           <button
             onClick={() => onSave(output)}
             style={{
-              padding: "8px 13px", background: "#fafafa",
-              border: "1.5px solid #ebebeb", borderRadius: 8,
-              cursor: "pointer", fontSize: 12, fontWeight: 800,
-              color: "#777", marginTop: 4,
+              padding: "10px 14px",
+              background: "#fafafb",
+              border: `1.5px solid ${BORDER}`,
+              borderRadius: 12,
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: 900,
+              color: "#67676d",
+              marginTop: 2,
             }}
           >
             🔖 Save
@@ -1043,10 +1374,8 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
       {loading ? (
         <Spinner msg={msg} />
       ) : (
-        <div style={{ padding: "0 14px" }}>
-          {score != null && (
-            <ScoreBar score={score} label={isCoaching ? "Conversion Score" : "Viral Score"} />
-          )}
+        <div style={{ padding: "18px 14px 0" }}>
+          {score != null && <ScoreBar score={score} label={isCoaching ? "Conversion Score" : "Viral Score"} />}
           <WhyBox text={output.whyItWorks} />
 
           <Card title="Fact / Angle" content={output.factOrAngle || output.fact} />
@@ -1060,36 +1389,49 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
           <Card title="Title" content={output.title} />
           <Card title="Intro" content={output.intro} />
           {output.structure && <Card title="Structure" content={output.structure} />}
-          {output.mainPoints && (
-            <Card title="Main Points" content={output.mainPoints.map((p) => `${p.point}: ${p.detail}`)} />
-          )}
+          {output.mainPoints && <Card title="Main Points" content={output.mainPoints.map((p) => `${p.point}: ${p.detail}`)} />}
           {output.realLifeExamples && <Card title="Real-Life Examples" content={output.realLifeExamples} />}
           <Card title="Closing Message" content={output.closingMessage} />
 
           {output.shortClips && (
-            <div style={{
-              marginBottom: 10, padding: "14px 16px",
-              background: "#fafafa", border: "1px solid #ebebeb", borderRadius: 8,
-            }}>
-              <p style={{
-                fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-                textTransform: "uppercase", color: RED, margin: "0 0 10px",
-              }}>
+            <div
+              style={{
+                marginBottom: 10,
+                padding: "16px 16px 14px",
+                background: "#fcfcfd",
+                border: `1px solid ${BORDER}`,
+                borderRadius: 18,
+                boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  color: RED,
+                  margin: "0 0 10px",
+                }}
+              >
                 Short Clips
               </p>
               {output.shortClips.map((clip, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
-                  <span style={{
-                    fontSize: 11, fontWeight: 900, color: RED,
-                    minWidth: 14, flexShrink: 0,
-                  }}>
+                <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10 }}>
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 900,
+                      color: RED,
+                      minWidth: 14,
+                      flexShrink: 0,
+                    }}
+                  >
                     {i + 1}
                   </span>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: "0 0 2px" }}>
-                      {clip.title}
-                    </p>
-                    <p style={{ fontSize: 12, color: "#888", margin: 0 }}>{clip.angle}</p>
+                    <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: "0 0 3px" }}>{clip.title}</p>
+                    <p style={{ fontSize: 12.5, color: MUTED, margin: 0, lineHeight: 1.55 }}>{clip.angle}</p>
                   </div>
                 </div>
               ))}
@@ -1097,14 +1439,25 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
           )}
 
           {output.type && (
-            <div style={{
-              display: "inline-block", padding: "4px 10px",
-              background: "#f5f5f5", borderRadius: 5, marginBottom: 10,
-            }}>
-              <span style={{
-                fontSize: 10, fontWeight: 900, letterSpacing: "0.08em",
-                textTransform: "uppercase", color: "#999",
-              }}>
+            <div
+              style={{
+                display: "inline-block",
+                padding: "6px 11px",
+                background: "#f5f5f6",
+                borderRadius: 999,
+                marginBottom: 10,
+                border: `1px solid ${BORDER}`,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  color: "#8b8b91",
+                }}
+              >
                 {output.type}
               </span>
             </div>
@@ -1128,7 +1481,7 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
           ]}
         />
       )}
-    </div>
+    </AppShell>
   );
 }
 
@@ -1137,33 +1490,48 @@ function OutputScreen({ output: initialOutput, lane, format, onBack, onSave, onR
 // ============================================================
 const COPY_TOOLS = [
   {
-    id: "caption", label: "Caption Builder", desc: "Hook · Body · CTA",
-    prompt: "captionBuilder", hasIntent: true,
+    id: "caption",
+    label: "Caption Builder",
+    desc: "Hook · Body · CTA",
+    prompt: "captionBuilder",
+    hasIntent: true,
     inputLabel: "Topic or paste content from generator",
     inputPlaceholder: "e.g. why dads stop going to the gym after 3 weeks",
   },
   {
-    id: "cta", label: "CTA Builder", desc: "Comment · DM · Engagement CTAs",
-    prompt: "ctaBuilder", hasIntent: true,
+    id: "cta",
+    label: "CTA Builder",
+    desc: "Comment · DM · Engagement CTAs",
+    prompt: "ctaBuilder",
+    hasIntent: true,
     inputLabel: "What is the post or offer about",
     inputPlaceholder: "e.g. fat loss coaching for busy dads",
   },
   {
-    id: "hookRefiner", label: "Hook Refiner", desc: "5 stronger hook versions",
-    prompt: "hookRefiner", hasIntent: false,
+    id: "hookRefiner",
+    label: "Hook Refiner",
+    desc: "5 stronger hook versions",
+    prompt: "hookRefiner",
+    hasIntent: false,
     inputLabel: "Hook to refine",
     inputPlaceholder: "Paste your existing hook here...",
   },
   {
-    id: "rewrite", label: "Rewrite Tool", desc: "Tighten any copy",
-    prompt: "rewriteTool", hasIntent: false,
+    id: "rewrite",
+    label: "Rewrite Tool",
+    desc: "Tighten any copy",
+    prompt: "rewriteTool",
+    hasIntent: false,
     inputLabel: "Copy to rewrite",
     inputPlaceholder: "Paste any caption, script, or copy...",
     rows: 6,
   },
   {
-    id: "longform", label: "Long Form Copy", desc: "Descriptions · Storytelling",
-    prompt: "longFormCopy", hasIntent: true,
+    id: "longform",
+    label: "Long Form Copy",
+    desc: "Descriptions · Storytelling",
+    prompt: "longFormCopy",
+    hasIntent: true,
     inputLabel: "Topic or angle",
     inputPlaceholder: "e.g. how I went from dad bod to stage-ready while coaching clients full time",
   },
@@ -1189,6 +1557,7 @@ function CopySystemScreen({ onBack }) {
     const userMsg = `Intent: ${intent}\n${hook ? `Hook: ${hook}\n` : ""}Content: ${
       input || "Generate a strong example for a busy dad coaching audience."
     }`;
+
     try {
       let result;
       if (toolId === "hookRefiner") {
@@ -1199,7 +1568,10 @@ function CopySystemScreen({ onBack }) {
         result = await callClaude(PROMPTS[tool.prompt], userMsg);
       }
       stop();
-      if (result?.error) { setError(result.error); return; }
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
       setOutput(result);
     } catch {
       stop();
@@ -1207,124 +1579,181 @@ function CopySystemScreen({ onBack }) {
     }
   };
 
-  const reset = () => { setOutput(null); setInput(""); setHook(""); };
+  const reset = () => {
+    setOutput(null);
+    setInput("");
+    setHook("");
+  };
 
   return (
-    <div style={{ paddingBottom: 60 }}>
+    <AppShell>
       <Header onBack={onBack} eyebrow="Lane 03" title="Copy System" />
-      <div style={{ padding: "0 14px" }}>
-        <SectionLabel text="Select Tool" />
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
-          {COPY_TOOLS.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => { setToolId(t.id); setOutput(null); setInput(""); setHook(""); }}
-              style={{
-                padding: "14px 16px", borderRadius: 9,
-                border: `1.5px solid ${toolId === t.id ? BLACK : "#e8e8e8"}`,
-                background: toolId === t.id ? BLACK : "#fafafa",
-                cursor: "pointer", textAlign: "left",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-              }}
-            >
-              <div>
-                <p style={{ fontSize: 13, fontWeight: 800, color: toolId === t.id ? "#fff" : BLACK, margin: 0 }}>
-                  {t.label}
-                </p>
-                <p style={{ fontSize: 11, color: toolId === t.id ? "#777" : "#aaa", margin: "2px 0 0" }}>
-                  {t.desc}
-                </p>
-              </div>
-              {toolId === t.id && <span style={{ fontSize: 14, color: RED }}>✓</span>}
-            </button>
-          ))}
-        </div>
-
-        {tool && !output && (
-          <>
-            <Divider />
-            {tool.hasIntent && (
-              <>
-                <SectionLabel text="Intent" />
-                <div style={{ display: "flex", gap: 7, marginBottom: 14 }}>
-                  {INTENTS.map((i) => (
-                    <Pill key={i} label={i} active={intent === i} onClick={() => setIntent(i)} />
-                  ))}
-                </div>
-              </>
-            )}
-            {(toolId === "caption" || toolId === "longform") && (
-              <>
-                <SectionLabel text="Hook (optional)" />
-                <TextInput value={hook} onChange={setHook} placeholder="Paste a hook or leave blank to auto-generate..." rows={2} />
-              </>
-            )}
-            <SectionLabel text={tool.inputLabel} />
-            <TextInput value={input} onChange={setInput} placeholder={tool.inputPlaceholder} rows={tool.rows || 4} />
-            {error && <p style={{ fontSize: 13, color: RED, marginBottom: 10 }}>{error}</p>}
-            {loading ? <Spinner msg={msg} /> : <BigButton label={`Run ${tool.label} →`} onClick={run} />}
-          </>
-        )}
-
-        {output && !loading && (
-          <div style={{ animation: "fadeUp 0.2s ease" }}>
-            <Divider />
-            <Card title="Hook Line" content={output.hook} accent />
-            {output.body && <Card title="Body" content={output.body} />}
-            {output.cta && !output.comment && <Card title="CTA" content={output.cta} />}
-            {output.comment && <Card title="Comment CTAs" content={output.comment} />}
-            {output.dm && <Card title="DM CTAs" content={output.dm} />}
-            {output.engagement && <Card title="Engagement CTAs" content={output.engagement} />}
-            {output.refined && <Card title="Refined Hooks" content={output.refined} />}
-            {output.strongest && (
-              <div style={{
-                padding: "13px 16px", background: "#fff8f8",
-                border: "1px solid #f0d5d4", borderRadius: 8, marginBottom: 10,
-              }}>
-                <p style={{
-                  fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-                  textTransform: "uppercase", color: RED, margin: "0 0 5px",
-                }}>
-                  Strongest
-                </p>
-                <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: "0 0 5px" }}>
-                  {output.strongest}
-                </p>
-                {output.whyStrongest && (
-                  <p style={{ fontSize: 12, color: "#888", margin: 0, fontStyle: "italic" }}>
-                    {output.whyStrongest}
+      <div style={{ padding: "18px 14px 24px" }}>
+        <SoftPanel>
+          <SectionLabel text="Select Tool" />
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+            {COPY_TOOLS.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => {
+                  setToolId(t.id);
+                  setOutput(null);
+                  setInput("");
+                  setHook("");
+                }}
+                style={{
+                  padding: "16px 16px",
+                  borderRadius: 16,
+                  border: `1.5px solid ${toolId === t.id ? BLACK : BORDER}`,
+                  background: toolId === t.id ? BLACK : "#fff",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  boxShadow: toolId === t.id ? "0 10px 24px rgba(0,0,0,0.09)" : "none",
+                }}
+              >
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 800, color: toolId === t.id ? "#fff" : BLACK, margin: 0 }}>
+                    {t.label}
                   </p>
-                )}
-              </div>
-            )}
-            {output.rewritten && <Card title="Rewritten" content={output.rewritten} accent />}
-            {output.whatChanged && (
-              <div style={{
-                padding: "11px 14px", background: "#fafafa",
-                border: "1px solid #ebebeb", borderRadius: 8, marginBottom: 10,
-              }}>
-                <p style={{
-                  fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-                  textTransform: "uppercase", color: "#999", margin: "0 0 4px",
-                }}>
-                  What Changed
-                </p>
-                <p style={{ fontSize: 13, lineHeight: 1.6, color: "#777", margin: 0 }}>
-                  {output.whatChanged}
-                </p>
-              </div>
-            )}
-            {output.openingHook && <Card title="Opening Hook" content={output.openingHook} accent />}
-            {output.closingMessage && <Card title="Closing" content={output.closingMessage} />}
-            {output.cta && output.openingHook && <Card title="CTA" content={output.cta} />}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 4 }}>
-              <BigButton label="Regenerate" onClick={run} />
-              <BigButton label="New Input" onClick={reset} variant="ghost" />
-            </div>
+                  <p style={{ fontSize: 11.5, color: toolId === t.id ? "#87878e" : MUTED, margin: "4px 0 0" }}>
+                    {t.desc}
+                  </p>
+                </div>
+                {toolId === t.id && <span style={{ fontSize: 14, color: RED }}>✓</span>}
+              </button>
+            ))}
           </div>
-        )}
+
+          {tool && !output && (
+            <>
+              <Divider />
+
+              {tool.hasIntent && (
+                <>
+                  <SectionLabel text="Intent" />
+                  <div style={{ display: "flex", gap: 7, marginBottom: 14, overflowX: "auto", paddingBottom: 2 }}>
+                    {INTENTS.map((i) => (
+                      <Pill key={i} label={i} active={intent === i} onClick={() => setIntent(i)} />
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {(toolId === "caption" || toolId === "longform") && (
+                <>
+                  <SectionLabel text="Hook (optional)" />
+                  <TextInput value={hook} onChange={setHook} placeholder="Paste a hook or leave blank to auto-generate..." rows={2} />
+                </>
+              )}
+
+              <SectionLabel text={tool.inputLabel} />
+              <TextInput value={input} onChange={setInput} placeholder={tool.inputPlaceholder} rows={tool.rows || 4} />
+
+              {error && (
+                <div
+                  style={{
+                    padding: "13px 14px",
+                    background: "#fff8f8",
+                    border: "1px solid #f0d5d4",
+                    borderRadius: 14,
+                    marginBottom: 12,
+                  }}
+                >
+                  <p style={{ fontSize: 13, color: RED, margin: 0, lineHeight: 1.55 }}>{error}</p>
+                </div>
+              )}
+
+              {loading ? <Spinner msg={msg} /> : <BigButton label={`Run ${tool.label} →`} onClick={run} />}
+            </>
+          )}
+
+          {output && !loading && (
+            <div style={{ animation: "fadeUp 0.2s ease" }}>
+              <Divider />
+              <Card title="Hook Line" content={output.hook} accent />
+              {output.body && <Card title="Body" content={output.body} />}
+              {output.cta && !output.comment && <Card title="CTA" content={output.cta} />}
+
+              {output.comment && <Card title="Comment CTAs" content={output.comment} />}
+              {output.dm && <Card title="DM CTAs" content={output.dm} />}
+              {output.engagement && <Card title="Engagement CTAs" content={output.engagement} />}
+
+              {output.refined && <Card title="Refined Hooks" content={output.refined} />}
+
+              {output.strongest && (
+                <div
+                  style={{
+                    padding: "14px 16px",
+                    background: "#fff8f8",
+                    border: "1px solid #f0d5d4",
+                    borderRadius: 16,
+                    marginBottom: 10,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 900,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: RED,
+                      margin: "0 0 5px",
+                    }}
+                  >
+                    Strongest
+                  </p>
+                  <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: "0 0 5px" }}>{output.strongest}</p>
+                  {output.whyStrongest && (
+                    <p style={{ fontSize: 12, color: "#888", margin: 0, fontStyle: "italic", lineHeight: 1.6 }}>
+                      {output.whyStrongest}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {output.rewritten && <Card title="Rewritten" content={output.rewritten} accent />}
+              {output.whatChanged && (
+                <div
+                  style={{
+                    padding: "12px 14px",
+                    background: "#fafafb",
+                    border: `1px solid ${BORDER}`,
+                    borderRadius: 16,
+                    marginBottom: 10,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 900,
+                      letterSpacing: "0.1em",
+                      textTransform: "uppercase",
+                      color: "#999",
+                      margin: "0 0 4px",
+                    }}
+                  >
+                    What Changed
+                  </p>
+                  <p style={{ fontSize: 13, lineHeight: 1.6, color: "#777", margin: 0 }}>{output.whatChanged}</p>
+                </div>
+              )}
+
+              {output.openingHook && <Card title="Opening Hook" content={output.openingHook} accent />}
+              {output.closingMessage && <Card title="Closing" content={output.closingMessage} />}
+              {output.cta && output.openingHook && <Card title="CTA" content={output.cta} />}
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 4 }}>
+                <BigButton label="Regenerate" onClick={run} />
+                <BigButton label="New Input" onClick={reset} variant="ghost" />
+              </div>
+            </div>
+          )}
+        </SoftPanel>
       </div>
-    </div>
+    </AppShell>
   );
 }
 
@@ -1333,64 +1762,92 @@ function CopySystemScreen({ onBack }) {
 // ============================================================
 function SavedScreen({ saved, onBack, onDelete }) {
   return (
-    <div style={{ paddingBottom: 40 }}>
+    <AppShell>
       <Header onBack={onBack} title="Saved Ideas" />
-      <div style={{ padding: "0 14px" }}>
+      <div style={{ padding: "18px 14px 24px" }}>
         {saved.length === 0 ? (
-          <p style={{
-            fontSize: 13, color: "#aaa", textAlign: "center",
-            padding: "50px 0", lineHeight: 1.7,
-          }}>
-            Nothing saved yet.<br />Hit 🔖 on any output to save it here.
-          </p>
+          <SoftPanel>
+            <p style={{ fontSize: 13, color: "#8a8a90", textAlign: "center", padding: "34px 0", lineHeight: 1.8, margin: 0 }}>
+              Nothing saved yet.
+              <br />
+              Hit 🔖 on any output to save it here.
+            </p>
+          </SoftPanel>
         ) : (
           saved.map((item, i) => (
-            <div key={i} style={{
-              padding: "14px 16px", background: "#fafafa",
-              border: "1px solid #ebebeb", borderRadius: 8, marginBottom: 10,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <div style={{ display: "flex", gap: 6 }}>
-                  <span style={{
-                    fontSize: 10, fontWeight: 900, letterSpacing: "0.07em",
-                    textTransform: "uppercase",
-                    color: item.lane === "coaching" ? RED : "#666",
-                    background: item.lane === "coaching" ? "#fff4f4" : "#f0f0f0",
-                    padding: "3px 8px", borderRadius: 4,
-                  }}>
+            <div
+              key={i}
+              style={{
+                padding: "16px 16px",
+                background: "#fcfcfd",
+                border: `1px solid ${BORDER}`,
+                borderRadius: 18,
+                marginBottom: 10,
+                boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 900,
+                      letterSpacing: "0.07em",
+                      textTransform: "uppercase",
+                      color: item.lane === "coaching" ? RED : "#666",
+                      background: item.lane === "coaching" ? "#fff4f4" : "#f0f0f0",
+                      padding: "4px 8px",
+                      borderRadius: 999,
+                    }}
+                  >
                     {item.lane}
                   </span>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, color: "#999",
-                    background: "#f0f0f0", padding: "3px 8px", borderRadius: 4,
-                  }}>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: "#999",
+                      background: "#f0f0f0",
+                      padding: "4px 8px",
+                      borderRadius: 999,
+                    }}
+                  >
                     {item.format}
                   </span>
                 </div>
+
                 <button
                   onClick={() => onDelete(i)}
                   style={{
-                    fontSize: 13, color: "#bbb", background: "none",
-                    border: "none", cursor: "pointer", padding: 0,
+                    fontSize: 14,
+                    color: "#bbb",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: 0,
+                    marginLeft: 12,
                   }}
                 >
                   ✕
                 </button>
               </div>
-              <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: "0 0 3px" }}>
+
+              <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: "0 0 5px", lineHeight: 1.45 }}>
                 {item.topic || item.hook || "Saved idea"}
               </p>
+
               {item.score && (
-                <p style={{ fontSize: 12, color: "#999", margin: 0 }}>
+                <p style={{ fontSize: 12.5, color: "#8c8c92", margin: 0 }}>
                   Score: <span style={{ color: RED, fontWeight: 900 }}>{item.score}</span>
                 </p>
               )}
-              <p style={{ fontSize: 11, color: "#bbb", margin: "6px 0 0" }}>{item.date}</p>
+
+              <p style={{ fontSize: 11.5, color: "#b1b1b7", margin: "8px 0 0" }}>{item.date}</p>
             </div>
           ))
         )}
       </div>
-    </div>
+    </AppShell>
   );
 }
 
@@ -1404,14 +1861,20 @@ function YouTubeExpansionScreen({ onBack }) {
   const { loading, msg, start, stop } = useLoader();
 
   const run = async () => {
-    if (!input.trim()) { setError("Enter a topic or idea first."); return; }
+    if (!input.trim()) {
+      setError("Enter a topic or idea first.");
+      return;
+    }
     setError(null);
     setOutput(null);
     start("Building full expansion…");
     try {
       const result = await callClaude(PROMPTS.youtubeExpansion, `Topic: ${input}`);
       stop();
-      if (result?.error) { setError(result.error); return; }
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
       setOutput(result);
     } catch {
       stop();
@@ -1419,32 +1882,56 @@ function YouTubeExpansionScreen({ onBack }) {
     }
   };
 
-  const regenerate = () => { setOutput(null); run(); };
+  const regenerate = () => {
+    setOutput(null);
+    run();
+  };
 
   const YTSectionHeader = ({ number, title }) => (
     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, marginTop: 6 }}>
-      <span style={{
-        fontSize: 10, fontWeight: 900, color: "#fff", background: RED,
-        width: 22, height: 22, borderRadius: "50%",
-        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-      }}>
+      <span
+        style={{
+          fontSize: 10,
+          fontWeight: 900,
+          color: "#fff",
+          background: RED,
+          width: 22,
+          height: 22,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
         {number}
       </span>
-      <span style={{
-        fontSize: 11, fontWeight: 900, letterSpacing: "0.1em",
-        textTransform: "uppercase", color: BLACK,
-      }}>
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 900,
+          letterSpacing: "0.1em",
+          textTransform: "uppercase",
+          color: BLACK,
+        }}
+      >
         {title}
       </span>
     </div>
   );
 
   const Block = ({ children }) => (
-    <div style={{
-      marginBottom: 14, padding: "14px 16px",
-      background: "#fafafa", border: "1px solid #ebebeb",
-      borderRadius: 8, animation: "fadeUp 0.2s ease",
-    }}>
+    <div
+      style={{
+        marginBottom: 14,
+        padding: "16px 16px 15px",
+        background: "#fcfcfd",
+        border: `1px solid ${BORDER}`,
+        borderRadius: 18,
+        animation: "fadeUp 0.2s ease",
+        boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+      }}
+    >
       {children}
     </div>
   );
@@ -1460,9 +1947,15 @@ function YouTubeExpansionScreen({ onBack }) {
             setTimeout(() => setCopied(false), 2000);
           }}
           style={{
-            fontSize: 10, fontWeight: 800, letterSpacing: "0.07em",
-            textTransform: "uppercase", color: copied ? RED : "#bbb",
-            background: "none", border: "none", cursor: "pointer", padding: 0,
+            fontSize: 10,
+            fontWeight: 900,
+            letterSpacing: "0.07em",
+            textTransform: "uppercase",
+            color: copied ? RED : "#bbb",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: 0,
           }}
         >
           {copied ? "COPIED" : "COPY"}
@@ -1472,34 +1965,44 @@ function YouTubeExpansionScreen({ onBack }) {
   };
 
   const ListItems = ({ items }) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       {(items || []).map((item, i) => (
         <div key={i} style={{ display: "flex", gap: 10 }}>
-          <span style={{
-            fontSize: 11, fontWeight: 900, color: RED,
-            minWidth: 14, paddingTop: 2, flexShrink: 0,
-          }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 900,
+              color: RED,
+              minWidth: 14,
+              paddingTop: 2,
+              flexShrink: 0,
+            }}
+          >
             {i + 1}
           </span>
-          <p style={{ fontSize: 13, lineHeight: 1.65, color: BLACK, margin: 0 }}>{item}</p>
+          <p style={{ fontSize: 13.5, lineHeight: 1.68, color: TEXT, margin: 0 }}>{item}</p>
         </div>
       ))}
     </div>
   );
 
   const YTLabel = ({ text }) => (
-    <p style={{
-      fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-      textTransform: "uppercase", color: RED, margin: "0 0 4px",
-    }}>
+    <p
+      style={{
+        fontSize: 10,
+        fontWeight: 900,
+        letterSpacing: "0.1em",
+        textTransform: "uppercase",
+        color: RED,
+        margin: "0 0 4px",
+      }}
+    >
       {text}
     </p>
   );
 
   const Body = ({ text }) => (
-    <p style={{ fontSize: 13, lineHeight: 1.7, color: BLACK, margin: 0, whiteSpace: "pre-wrap" }}>
-      {text}
-    </p>
+    <p style={{ fontSize: 13.5, lineHeight: 1.74, color: TEXT, margin: 0, whiteSpace: "pre-wrap" }}>{text}</p>
   );
 
   const DualScore = ({ viral, conversion }) => (
@@ -1511,26 +2014,37 @@ function YouTubeExpansionScreen({ onBack }) {
         const strength = score >= 85 ? "Strong" : score >= 70 ? "Good" : score >= 50 ? "Mid" : "Weak";
         const col = score >= 85 ? RED : score >= 70 ? BLACK : "#aaa";
         return (
-          <div key={label} style={{
-            flex: 1, padding: "14px", background: "#fafafa",
-            border: "1px solid #ebebeb", borderRadius: 8,
-          }}>
-            <p style={{
-              fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-              textTransform: "uppercase", color: "#999", margin: "0 0 4px",
-            }}>
+          <div
+            key={label}
+            style={{
+              flex: 1,
+              padding: "14px",
+              background: "#fcfcfd",
+              border: `1px solid ${BORDER}`,
+              borderRadius: 18,
+              boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+            }}
+          >
+            <p
+              style={{
+                fontSize: 10,
+                fontWeight: 900,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                color: "#999",
+                margin: "0 0 4px",
+              }}
+            >
               {label}
             </p>
             <div style={{ display: "flex", alignItems: "baseline", gap: 6, marginBottom: 8 }}>
-              <span style={{ fontSize: 28, fontWeight: 900, color: col, letterSpacing: "-0.03em" }}>
-                {score}
-              </span>
+              <span style={{ fontSize: 28, fontWeight: 900, color: col, letterSpacing: "-0.03em" }}>{score}</span>
               <span style={{ fontSize: 10, fontWeight: 900, color: col, letterSpacing: "0.08em" }}>
                 {strength.toUpperCase()}
               </span>
             </div>
-            <div style={{ height: 3, background: "#f0f0f0", borderRadius: 2 }}>
-              <div style={{ height: "100%", width: `${score}%`, background: RED, borderRadius: 2 }} />
+            <div style={{ height: 4, background: "#efeff2", borderRadius: 999 }}>
+              <div style={{ height: "100%", width: `${score}%`, background: RED, borderRadius: 999 }} />
             </div>
           </div>
         );
@@ -1546,17 +2060,28 @@ function YouTubeExpansionScreen({ onBack }) {
       <div style={{ animation: "fadeUp 0.25s ease" }}>
         <YTSectionHeader number={1} title="Core Idea Breakdown" />
         <Block>
-          <YTLabel text="Angle" /><Body text={o.coreIdea?.angle} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-          <YTLabel text="Who It's For" /><Body text={o.coreIdea?.whoItsFor} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-          <YTLabel text="Main Message" /><Body text={o.coreIdea?.mainMessage} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
+          <YTLabel text="Angle" />
+          <Body text={o.coreIdea?.angle} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <YTLabel text="Who It's For" />
+          <Body text={o.coreIdea?.whoItsFor} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <YTLabel text="Main Message" />
+          <Body text={o.coreIdea?.mainMessage} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
           <YTLabel text="Best Content Type" />
-          <span style={{
-            fontSize: 11, fontWeight: 900, color: RED, background: "#fff4f4",
-            padding: "4px 10px", borderRadius: 4, letterSpacing: "0.06em", textTransform: "uppercase",
-          }}>
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 900,
+              color: RED,
+              background: "#fff4f4",
+              padding: "5px 10px",
+              borderRadius: 999,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+            }}
+          >
             {o.coreIdea?.bestContentType}
           </span>
         </Block>
@@ -1564,21 +2089,33 @@ function YouTubeExpansionScreen({ onBack }) {
         <YTSectionHeader number={2} title="YouTube Titles" />
         <Block>
           {o.youtubeTitles?.map((t, i) => (
-            <div key={i} style={{
-              display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-              padding: "8px 0",
-              borderBottom: i < o.youtubeTitles.length - 1 ? "1px solid #f0f0f0" : "none",
-            }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                padding: "9px 0",
+                borderBottom: i < o.youtubeTitles.length - 1 ? `1px solid ${SOFT}` : "none",
+              }}
+            >
               <div style={{ display: "flex", gap: 10, flex: 1 }}>
                 <span style={{ fontSize: 11, fontWeight: 900, color: RED, minWidth: 14 }}>{i + 1}</span>
-                <p style={{ fontSize: 14, fontWeight: 700, color: BLACK, margin: 0, lineHeight: 1.5 }}>{t}</p>
+                <p style={{ fontSize: 14.5, fontWeight: 800, color: BLACK, margin: 0, lineHeight: 1.5 }}>{t}</p>
               </div>
               <button
                 onClick={() => navigator.clipboard.writeText(t)}
                 style={{
-                  fontSize: 10, fontWeight: 800, color: "#bbb", background: "none",
-                  border: "none", cursor: "pointer", padding: "2px 0 0 12px",
-                  flexShrink: 0, letterSpacing: "0.06em", textTransform: "uppercase",
+                  fontSize: 10,
+                  fontWeight: 900,
+                  color: "#bbb",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "2px 0 0 12px",
+                  flexShrink: 0,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
                 }}
               >
                 COPY
@@ -1595,38 +2132,54 @@ function YouTubeExpansionScreen({ onBack }) {
 
         <YTSectionHeader number={4} title="Video Structure" />
         <Block>
-          <YTLabel text="Hook (First 10 Seconds)" /><Body text={o.videoStructure?.hook} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-          <YTLabel text="Intro" /><Body text={o.videoStructure?.intro} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-          <YTLabel text="Key Points" /><ListItems items={o.videoStructure?.keyPoints} />
+          <YTLabel text="Hook (First 10 Seconds)" />
+          <Body text={o.videoStructure?.hook} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <YTLabel text="Intro" />
+          <Body text={o.videoStructure?.intro} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <YTLabel text="Key Points" />
+          <ListItems items={o.videoStructure?.keyPoints} />
           {o.videoStructure?.realLifeExamples?.length > 0 && (
             <>
-              <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-              <YTLabel text="Real-Life Examples" /><ListItems items={o.videoStructure.realLifeExamples} />
+              <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+              <YTLabel text="Real-Life Examples" />
+              <ListItems items={o.videoStructure.realLifeExamples} />
             </>
           )}
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-          <YTLabel text="Closing Message" /><Body text={o.videoStructure?.closingMessage} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <YTLabel text="Closing Message" />
+          <Body text={o.videoStructure?.closingMessage} />
         </Block>
 
         <YTSectionHeader number={5} title="Short-Form Clips" />
         {o.shortFormClips?.map((clip, i) => (
           <Block key={i}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span style={{
-                fontSize: 10, fontWeight: 900, color: "#fff", background: RED,
-                width: 20, height: 20, borderRadius: "50%",
-                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-              }}>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  color: "#fff",
+                  background: RED,
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 {i + 1}
               </span>
-              <p style={{ fontSize: 13, fontWeight: 800, color: BLACK, margin: 0 }}>{clip.idea}</p>
+              <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0 }}>{clip.idea}</p>
             </div>
-            <YTLabel text="Hook" /><Body text={clip.hook} />
-            <div style={{ height: 1, background: "#f0f0f0", margin: "8px 0" }} />
+            <YTLabel text="Hook" />
+            <Body text={clip.hook} />
+            <div style={{ height: 1, background: SOFT, margin: "8px 0" }} />
             <YTLabel text="Why It Works" />
-            <p style={{ fontSize: 12, color: "#888", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
+            <p style={{ fontSize: 12.5, color: "#888", lineHeight: 1.6, margin: 0, fontStyle: "italic" }}>
               {clip.whyItWorks}
             </p>
           </Block>
@@ -1634,30 +2187,44 @@ function YouTubeExpansionScreen({ onBack }) {
 
         <YTSectionHeader number={6} title="First 3 Seconds" />
         <Block>
-          <div style={{
-            padding: "10px 14px", background: "#fff4f4",
-            border: `1.5px solid ${RED}`, borderRadius: 6, marginBottom: 10,
-          }}>
+          <div
+            style={{
+              padding: "12px 14px",
+              background: "#fff4f4",
+              border: `1.5px solid ${RED}`,
+              borderRadius: 14,
+              marginBottom: 10,
+            }}
+          >
             <YTLabel text="Opening Line" />
             <p style={{ fontSize: 15, fontWeight: 800, color: BLACK, margin: 0, lineHeight: 1.5 }}>
               {o.firstThreeSeconds?.openingLine}
             </p>
           </div>
-          <YTLabel text="Visual Idea" /><Body text={o.firstThreeSeconds?.visualIdea} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "8px 0" }} />
+          <YTLabel text="Visual Idea" />
+          <Body text={o.firstThreeSeconds?.visualIdea} />
+          <div style={{ height: 1, background: SOFT, margin: "8px 0" }} />
           <YTLabel text="On-Screen Text" />
-          <span style={{
-            display: "inline-block", fontSize: 13, fontWeight: 900, color: BLACK,
-            background: "#f0f0f0", padding: "6px 12px", borderRadius: 5,
-          }}>
+          <span
+            style={{
+              display: "inline-block",
+              fontSize: 13,
+              fontWeight: 900,
+              color: BLACK,
+              background: "#f0f0f2",
+              padding: "7px 12px",
+              borderRadius: 10,
+            }}
+          >
             {o.firstThreeSeconds?.onScreenText}
           </span>
         </Block>
 
         <YTSectionHeader number={7} title="Hook System" />
         <Block>
-          <YTLabel text="All Hooks" /><ListItems items={o.hookSystem?.hooks} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
+          <YTLabel text="All Hooks" />
+          <ListItems items={o.hookSystem?.hooks} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
             <YTLabel text="Best Hook" />
             <span style={{ fontSize: 20, fontWeight: 900, color: RED }}>
@@ -1665,25 +2232,34 @@ function YouTubeExpansionScreen({ onBack }) {
               <span style={{ fontSize: 11, fontWeight: 700, color: "#999" }}>/10</span>
             </span>
           </div>
-          <div style={{
-            padding: "10px 12px", background: "#fff4f4",
-            border: "1px solid #f0d5d4", borderRadius: 6, marginBottom: 10,
-          }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: 0 }}>
-              {o.hookSystem?.bestHook}
-            </p>
+          <div
+            style={{
+              padding: "11px 12px",
+              background: "#fff4f4",
+              border: "1px solid #f0d5d4",
+              borderRadius: 14,
+              marginBottom: 10,
+            }}
+          >
+            <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0 }}>{o.hookSystem?.bestHook}</p>
           </div>
-          <YTLabel text="Weakest Hook — Improved" /><Body text={o.hookSystem?.weakestHookImproved} />
+          <YTLabel text="Weakest Hook — Improved" />
+          <Body text={o.hookSystem?.weakestHookImproved} />
         </Block>
 
         <YTSectionHeader number={8} title="Thumbnail / Overlay Text" />
         <Block>
           {o.thumbnailOptions?.map((opt, i) => (
-            <div key={i} style={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              padding: "9px 0",
-              borderBottom: i < o.thumbnailOptions.length - 1 ? "1px solid #f0f0f0" : "none",
-            }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "9px 0",
+                borderBottom: i < o.thumbnailOptions.length - 1 ? `1px solid ${SOFT}` : "none",
+              }}
+            >
               <div style={{ display: "flex", gap: 10 }}>
                 <span style={{ fontSize: 11, fontWeight: 900, color: RED, minWidth: 14 }}>{i + 1}</span>
                 <p style={{ fontSize: 14, fontWeight: 900, color: BLACK, margin: 0 }}>{opt}</p>
@@ -1691,9 +2267,17 @@ function YouTubeExpansionScreen({ onBack }) {
               <button
                 onClick={() => navigator.clipboard.writeText(opt)}
                 style={{
-                  fontSize: 10, fontWeight: 800, color: "#bbb", background: "none",
-                  border: "none", cursor: "pointer", padding: 0,
-                  letterSpacing: "0.06em", textTransform: "uppercase", flexShrink: 0, marginLeft: 10,
+                  fontSize: 10,
+                  fontWeight: 900,
+                  color: "#bbb",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                  flexShrink: 0,
+                  marginLeft: 10,
                 }}
               >
                 COPY
@@ -1703,30 +2287,39 @@ function YouTubeExpansionScreen({ onBack }) {
         </Block>
 
         <YTSectionHeader number={9} title="Comment Bait" />
-        <Block><ListItems items={o.commentBait} /></Block>
+        <Block>
+          <ListItems items={o.commentBait} />
+        </Block>
 
         <YTSectionHeader number={10} title="5-Part Content Series" />
         {o.contentSeries?.map((ep, i) => (
           <Block key={i}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <span style={{
-                fontSize: 10, fontWeight: 900, color: "#fff", background: BLACK,
-                width: 20, height: 20, borderRadius: "50%",
-                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-              }}>
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 900,
+                  color: "#fff",
+                  background: BLACK,
+                  width: 20,
+                  height: 20,
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
+              >
                 {i + 1}
               </span>
-              <p style={{
-                fontSize: 12, fontWeight: 800, color: "#888", margin: 0,
-                letterSpacing: "0.05em", textTransform: "uppercase",
-              }}>
+              <p style={{ fontSize: 12, fontWeight: 800, color: "#888", margin: 0, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Part {i + 1}
               </p>
             </div>
             <YTLabel text="Hook" />
-            <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: "0 0 6px" }}>{ep.hook}</p>
+            <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: "0 0 6px" }}>{ep.hook}</p>
             <YTLabel text="Angle" />
-            <p style={{ fontSize: 13, color: "#555", lineHeight: 1.6, margin: "0 0 6px" }}>{ep.angle}</p>
+            <p style={{ fontSize: 13.5, color: "#555", lineHeight: 1.65, margin: "0 0 6px" }}>{ep.angle}</p>
             <YTLabel text="Idea" />
             <p style={{ fontSize: 13, fontStyle: "italic", color: "#888", margin: 0 }}>{ep.idea}</p>
           </Block>
@@ -1734,21 +2327,23 @@ function YouTubeExpansionScreen({ onBack }) {
 
         <YTSectionHeader number={11} title="Instagram Caption" />
         <Block>
-          <div style={{
-            padding: "10px 14px", background: "#fff4f4",
-            border: "1px solid #f0d5d4", borderRadius: 6, marginBottom: 10,
-          }}>
+          <div
+            style={{
+              padding: "12px 14px",
+              background: "#fff4f4",
+              border: "1px solid #f0d5d4",
+              borderRadius: 14,
+              marginBottom: 10,
+            }}
+          >
             <YTLabel text="Hook" />
-            <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: 0 }}>
-              {o.instagramCaption?.hook}
-            </p>
+            <p style={{ fontSize: 14, fontWeight: 800, color: BLACK, margin: 0 }}>{o.instagramCaption?.hook}</p>
           </div>
-          <YTLabel text="Body" /><Body text={o.instagramCaption?.body} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "8px 0" }} />
+          <YTLabel text="Body" />
+          <Body text={o.instagramCaption?.body} />
+          <div style={{ height: 1, background: SOFT, margin: "8px 0" }} />
           <YTLabel text="CTA" />
-          <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: 0 }}>
-            {o.instagramCaption?.cta}
-          </p>
+          <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0 }}>{o.instagramCaption?.cta}</p>
           <CopyLine text={`${o.instagramCaption?.hook}\n\n${o.instagramCaption?.body}\n\n${o.instagramCaption?.cta}`} />
         </Block>
 
@@ -1760,16 +2355,22 @@ function YouTubeExpansionScreen({ onBack }) {
 
         <YTSectionHeader number={13} title="Content Improvement" />
         <Block>
-          <YTLabel text="What's Weak" /><Body text={o.contentImprovement?.whatIsWeak} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
-          <YTLabel text="What to Remove" /><Body text={o.contentImprovement?.whatToRemove} />
-          <div style={{ height: 1, background: "#f0f0f0", margin: "10px 0" }} />
+          <YTLabel text="What's Weak" />
+          <Body text={o.contentImprovement?.whatIsWeak} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
+          <YTLabel text="What to Remove" />
+          <Body text={o.contentImprovement?.whatToRemove} />
+          <div style={{ height: 1, background: SOFT, margin: "10px 0" }} />
           <YTLabel text="Stronger Version" />
-          <div style={{
-            padding: "10px 14px", background: "#fff4f4",
-            border: "1px solid #f0d5d4", borderRadius: 6,
-          }}>
-            <p style={{ fontSize: 13, fontWeight: 700, color: BLACK, margin: 0, lineHeight: 1.65 }}>
+          <div
+            style={{
+              padding: "12px 14px",
+              background: "#fff4f4",
+              border: "1px solid #f0d5d4",
+              borderRadius: 14,
+            }}
+          >
+            <p style={{ fontSize: 13.5, fontWeight: 800, color: BLACK, margin: 0, lineHeight: 1.68 }}>
               {o.contentImprovement?.strongerVersion}
             </p>
           </div>
@@ -1778,48 +2379,67 @@ function YouTubeExpansionScreen({ onBack }) {
         <YTSectionHeader number={14} title="Final Scores" />
         <DualScore viral={o.finalScores?.viralScore} conversion={o.finalScores?.conversionScore} />
         <Block>
-          {o.finalScores?.breakdown && Object.entries(o.finalScores.breakdown).map(([key, val]) => (
-            <div key={key} style={{ paddingBottom: 8, marginBottom: 8, borderBottom: "1px solid #f0f0f0" }}>
-              <p style={{
-                fontSize: 10, fontWeight: 900, letterSpacing: "0.1em",
-                textTransform: "uppercase", color: "#999", margin: "0 0 3px",
-              }}>
-                {key.replace(/([A-Z])/g, " $1").toUpperCase()}
-              </p>
-              <p style={{ fontSize: 13, color: "#555", margin: 0, lineHeight: 1.6 }}>{val}</p>
-            </div>
-          ))}
+          {o.finalScores?.breakdown &&
+            Object.entries(o.finalScores.breakdown).map(([key, val]) => (
+              <div key={key} style={{ paddingBottom: 8, marginBottom: 8, borderBottom: `1px solid ${SOFT}` }}>
+                <p
+                  style={{
+                    fontSize: 10,
+                    fontWeight: 900,
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                    color: "#999",
+                    margin: "0 0 3px",
+                  }}
+                >
+                  {key.replace(/([A-Z])/g, " $1").toUpperCase()}
+                </p>
+                <p style={{ fontSize: 13.5, color: "#555", margin: 0, lineHeight: 1.6 }}>{val}</p>
+              </div>
+            ))}
         </Block>
 
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 4 }}>
           <BigButton label="Regenerate" onClick={regenerate} />
           <BigButton label="New Topic" onClick={() => { setOutput(null); setInput(""); }} variant="ghost" />
         </div>
-        <div style={{ height: 40 }} />
+        <div style={{ height: 10 }} />
       </div>
     );
   };
 
   return (
-    <div style={{ paddingBottom: 40 }}>
+    <AppShell>
       <Header onBack={onBack} eyebrow="Lane 04" title="YouTube Expansion" />
-      <div style={{ padding: "0 14px" }}>
+      <div style={{ padding: "18px 14px 24px" }}>
         {!output && (
-          <>
-            <p style={{ fontSize: 13, color: "#999", lineHeight: 1.6, margin: "0 0 14px" }}>
-              Drop a topic or idea. Get the full 14-section breakdown — titles, structure,
-              clips, hooks, captions, series, and scores.
+          <SoftPanel>
+            <p style={{ fontSize: 13.5, color: MUTED, lineHeight: 1.7, margin: "0 0 14px" }}>
+              Drop a topic or idea. Get the full 14-section breakdown — titles, structure, clips, hooks, captions, series, and scores.
             </p>
-            <TextInput value={input} onChange={setInput} placeholder="e.g. why dads lose muscle faster after 35" rows={4} />
-            {error && <p style={{ fontSize: 13, color: RED, marginBottom: 10 }}>{error}</p>}
+            <TextInput value={input} onChange={setInput} placeholder="e.g. why dads lose muscle faster after 35" rows={5} />
+            {error && (
+              <div
+                style={{
+                  padding: "13px 14px",
+                  background: "#fff8f8",
+                  border: "1px solid #f0d5d4",
+                  borderRadius: 14,
+                  marginBottom: 12,
+                }}
+              >
+                <p style={{ fontSize: 13, color: RED, margin: 0, lineHeight: 1.55 }}>{error}</p>
+              </div>
+            )}
             {loading ? <Spinner msg={msg} /> : <BigButton label="Build Full Expansion →" onClick={run} />}
-          </>
+          </SoftPanel>
         )}
+
         {loading && !output && <Spinner msg={msg} />}
         {output && !loading && renderOutput()}
         {output && loading && <Spinner msg={msg} />}
       </div>
-    </div>
+    </AppShell>
   );
 }
 
@@ -1836,7 +2456,6 @@ export default function App() {
   const [outputFormat, setOutputFormat] = useState(null);
   const [saved, setSaved] = useState([]);
 
-  // Load saved from localStorage on mount
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -1846,7 +2465,6 @@ export default function App() {
     }
   }, []);
 
-  // Persist saved to localStorage on change
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
@@ -1856,7 +2474,10 @@ export default function App() {
   }, [saved]);
 
   const handleOutput = (result, l, f, showLast = false) => {
-    if (showLast) { setScreen("output"); return; }
+    if (showLast) {
+      setScreen("output");
+      return;
+    }
     setOutput(result);
     setOutputLane(l);
     setOutputFormat(f);
@@ -1873,7 +2494,9 @@ export default function App() {
         score: item.viralScore || item.conversionScore || null,
         fullOutput: item,
         date: new Date().toLocaleDateString("en-GB", {
-          day: "numeric", month: "short", year: "numeric",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
         }),
       },
       ...prev,
@@ -1885,12 +2508,15 @@ export default function App() {
   };
 
   return (
-    <div style={{ fontFamily: FONT, maxWidth: 430, margin: "0 auto", minHeight: "100vh", background: "#fff" }}>
+    <>
       <style>{GLOBAL_STYLE}</style>
 
       {screen === "home" && (
         <HomeScreen
-          onLane={(l) => { setLane(l); setScreen("generator"); }}
+          onLane={(l) => {
+            setLane(l);
+            setScreen("generator");
+          }}
           onCopy={() => setScreen("copy")}
           onYT={() => setScreen("youtube")}
           onSaved={() => setScreen("saved")}
@@ -1899,12 +2525,7 @@ export default function App() {
       )}
 
       {screen === "generator" && (
-        <GeneratorScreen
-          lane={lane}
-          onBack={() => setScreen("home")}
-          onOutput={handleOutput}
-          hasLastOutput={!!output}
-        />
+        <GeneratorScreen lane={lane} onBack={() => setScreen("home")} onOutput={handleOutput} hasLastOutput={!!output} />
       )}
 
       {screen === "output" && output && (
@@ -1921,13 +2542,7 @@ export default function App() {
       {screen === "copy" && <CopySystemScreen onBack={() => setScreen("home")} />}
       {screen === "youtube" && <YouTubeExpansionScreen onBack={() => setScreen("home")} />}
 
-      {screen === "saved" && (
-        <SavedScreen
-          saved={saved}
-          onBack={() => setScreen("home")}
-          onDelete={handleDelete}
-        />
-      )}
-    </div>
+      {screen === "saved" && <SavedScreen saved={saved} onBack={() => setScreen("home")} onDelete={handleDelete} />}
+    </>
   );
 }
