@@ -1,8 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST(req) {
@@ -16,34 +16,24 @@ export async function POST(req) {
       );
     }
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 4000,
-      system: systemPrompt,
+    const response = await client.chat.completions.create({
+      model: "gpt-4o",
       messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: userMessage,
-            },
-          ],
-        },
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userMessage },
       ],
+      temperature: 0.8,
     });
 
-    const text =
-      response.content?.map((item) => item.text || "").join("") || "";
+    const text = response.choices?.[0]?.message?.content || "";
 
     return NextResponse.json({ text });
-
   } catch (error) {
     console.error("FULL ERROR:", error);
 
     return NextResponse.json(
       {
-        error: error.message,
+        error: error?.message || "OpenAI request failed",
         full: JSON.stringify(error, null, 2),
       },
       { status: 500 }
