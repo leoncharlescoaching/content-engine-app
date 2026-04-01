@@ -5,9 +5,10 @@ import React, { useState } from "react";
 // ================= DESIGN =================
 const RED = "#be302c";
 const BG = "#050505";
-const BORDER = "#1c1c1c";
+const CARD = "#0f1115";
+const BORDER = "#1f2329";
 const TEXT = "#ffffff";
-const MUTED = "#8a8a8a";
+const MUTED = "#9ca3af";
 
 // ================= GLOBAL =================
 const GLOBAL_STYLE = `
@@ -15,7 +16,7 @@ const GLOBAL_STYLE = `
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #111318 0%, #050505 70%);
+  background: ${BG};
   color: ${TEXT};
   font-family: Inter, sans-serif;
 }
@@ -53,12 +54,12 @@ function Card({ children }) {
   return (
     <div
       style={{
-        background: "linear-gradient(145deg, #111318, #0b0c10)",
+        background: CARD,
         border: `1px solid ${BORDER}`,
-        borderRadius: 20,
+        borderRadius: 18,
         padding: 20,
-        marginBottom: 14,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
+        marginBottom: 16,
+        boxShadow: "0 8px 25px rgba(0,0,0,0.4)",
       }}
     >
       {children}
@@ -72,26 +73,26 @@ function LaneCard({ title, desc, onClick }) {
       onClick={onClick}
       style={{
         width: "100%",
-        padding: 20,
-        borderRadius: 18,
+        padding: 18,
+        borderRadius: 16,
         border: `1px solid ${BORDER}`,
-        background: "linear-gradient(145deg, #101217, #0a0b0f)",
+        background: CARD,
         textAlign: "left",
-        marginBottom: 12,
-        boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
+        marginBottom: 14,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "scale(1.02)";
         e.currentTarget.style.border = `1px solid ${RED}`;
+        e.currentTarget.style.transform = "translateY(-2px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = "scale(1)";
         e.currentTarget.style.border = `1px solid ${BORDER}`;
+        e.currentTarget.style.transform = "translateY(0)";
       }}
     >
-      <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 4 }}>
+      <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 6 }}>
         {title}
       </div>
+
       <div style={{ color: MUTED, fontSize: 13 }}>
         {desc}
       </div>
@@ -112,7 +113,7 @@ function Button({ text, onClick }) {
         color: "#fff",
         fontWeight: 900,
         fontSize: 15,
-        marginTop: 10,
+        marginTop: 12,
       }}
     >
       {text}
@@ -145,7 +146,7 @@ export default function App() {
       style={{
         maxWidth: 420,
         margin: "0 auto",
-        padding: 16,
+        padding: 18,
         minHeight: "100vh",
       }}
     >
@@ -153,9 +154,17 @@ export default function App() {
 
       {/* HEADER */}
       <Card>
-        <p style={{ color: RED, fontSize: 12, fontWeight: 900 }}>PRIVATE</p>
+        <p style={{ color: RED, fontSize: 12, fontWeight: 900 }}>
+          PRIVATE
+        </p>
 
-        <h1 style={{ margin: "6px 0", fontSize: 34, letterSpacing: "-0.03em" }}>
+        <h1
+          style={{
+            margin: "8px 0",
+            fontSize: 32,
+            letterSpacing: "-0.02em",
+          }}
+        >
           Content Engine
         </h1>
 
@@ -204,7 +213,7 @@ export default function App() {
               style={{
                 width: "100%",
                 height: 140,
-                background: "#0a0b0f",
+                background: "#0a0c10",
                 border: `1px solid ${BORDER}`,
                 borderRadius: 14,
                 padding: 14,
