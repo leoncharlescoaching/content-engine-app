@@ -1,33 +1,33 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useState } from "react";
 
 // ================= DESIGN =================
 const RED = "#be302c";
 const BG = "#050505";
-const SURFACE = "#0f1014";
-const SURFACE_2 = "#15171d";
-const BORDER = "#23262f";
-const TEXT = "#f5f7fb";
-const MUTED = "#a4a8b3";
-const MUTED_2 = "#7e848f";
-const SOFT_RED = "#1b0d0d";
-const MAX_WIDTH = 430;
+const BORDER = "#1c1c1c";
+const TEXT = "#ffffff";
+const MUTED = "#8a8a8a";
 
 // ================= GLOBAL =================
 const GLOBAL_STYLE = `
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #12141b 0%, #050505 70%);
+  background: radial-gradient(circle at top, #111318 0%, #050505 70%);
   color: ${TEXT};
   font-family: Inter, sans-serif;
 }
-button { cursor: pointer; }
+
+button {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 `;
 
 // ================= API =================
-async function callClaude(systemPrompt, userMessage) {
+async function callAPI(systemPrompt, userMessage) {
   const res = await fetch("/api/claude", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -49,54 +49,20 @@ async function callClaude(systemPrompt, userMessage) {
 }
 
 // ================= UI =================
-function AppShell({ children }) {
-  return (
-    <div
-      style={{
-        maxWidth: MAX_WIDTH,
-        margin: "0 auto",
-        minHeight: "100vh",
-        padding: "16px",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
 function Card({ children }) {
   return (
     <div
       style={{
-        background: SURFACE,
+        background: "linear-gradient(145deg, #111318, #0b0c10)",
         border: `1px solid ${BORDER}`,
         borderRadius: 20,
-        padding: 18,
-        marginBottom: 12,
+        padding: 20,
+        marginBottom: 14,
+        boxShadow: "0 10px 30px rgba(0,0,0,0.6)",
       }}
     >
       {children}
     </div>
-  );
-}
-
-function Button({ text, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        width: "100%",
-        padding: 14,
-        borderRadius: 14,
-        border: "none",
-        background: RED,
-        color: "#fff",
-        fontWeight: 900,
-        marginTop: 10,
-      }}
-    >
-      {text}
-    </button>
   );
 }
 
@@ -106,118 +72,169 @@ function LaneCard({ title, desc, onClick }) {
       onClick={onClick}
       style={{
         width: "100%",
-        padding: 18,
+        padding: 20,
         borderRadius: 18,
         border: `1px solid ${BORDER}`,
-        background: SURFACE,
+        background: "linear-gradient(145deg, #101217, #0a0b0f)",
         textAlign: "left",
-        marginBottom: 10,
+        marginBottom: 12,
+        boxShadow: "0 6px 20px rgba(0,0,0,0.5)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.02)";
+        e.currentTarget.style.border = `1px solid ${RED}`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+        e.currentTarget.style.border = `1px solid ${BORDER}`;
       }}
     >
-      <div style={{ fontWeight: 900, fontSize: 18 }}>{title}</div>
-      <div style={{ color: MUTED, fontSize: 13 }}>{desc}</div>
+      <div style={{ fontWeight: 900, fontSize: 18, marginBottom: 4 }}>
+        {title}
+      </div>
+      <div style={{ color: MUTED, fontSize: 13 }}>
+        {desc}
+      </div>
     </button>
   );
 }
 
-// ================= SCREENS =================
-function HomeScreen({ setScreen }) {
+function Button({ text, onClick }) {
   return (
-    <AppShell>
+    <button
+      onClick={onClick}
+      style={{
+        width: "100%",
+        padding: 16,
+        borderRadius: 14,
+        border: "none",
+        background: RED,
+        color: "#fff",
+        fontWeight: 900,
+        fontSize: 15,
+        marginTop: 10,
+      }}
+    >
+      {text}
+    </button>
+  );
+}
+
+// ================= APP =================
+export default function App() {
+  const [screen, setScreen] = useState("home");
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const generate = async () => {
+    setLoading(true);
+    setOutput(null);
+
+    const res = await callAPI(
+      "You are Leon Charles. Direct. No fluff.",
+      input || "Give a strong content idea"
+    );
+
+    setOutput(res);
+    setLoading(false);
+  };
+
+  return (
+    <div
+      style={{
+        maxWidth: 420,
+        margin: "0 auto",
+        padding: 16,
+        minHeight: "100vh",
+      }}
+    >
+      <style>{GLOBAL_STYLE}</style>
+
+      {/* HEADER */}
       <Card>
         <p style={{ color: RED, fontSize: 12, fontWeight: 900 }}>PRIVATE</p>
-        <h1 style={{ margin: "6px 0", fontSize: 32 }}>
+
+        <h1 style={{ margin: "6px 0", fontSize: 34, letterSpacing: "-0.03em" }}>
           Content Engine
         </h1>
+
         <p style={{ color: MUTED }}>
           Unfiltered · Coaching · Copy
         </p>
       </Card>
 
-      <LaneCard
-        title="Unfiltered"
-        desc="Reaction · Bro Did You Know"
-        onClick={() => setScreen("unfiltered")}
-      />
+      {/* HOME */}
+      {screen === "home" && (
+        <>
+          <LaneCard
+            title="Unfiltered"
+            desc="Reaction · Opinion · Bro Did You Know"
+            onClick={() => setScreen("generator")}
+          />
 
-      <LaneCard
-        title="Coaching"
-        desc="Hooks · Reels · Scripts"
-        onClick={() => setScreen("coaching")}
-      />
+          <LaneCard
+            title="Coaching"
+            desc="Hooks · Reels · Scripts"
+            onClick={() => setScreen("generator")}
+          />
 
-      <LaneCard
-        title="Copy System"
-        desc="Captions · CTAs · Rewrite"
-        onClick={() => setScreen("copy")}
-      />
+          <LaneCard
+            title="Copy System"
+            desc="Captions · CTA · Rewrite"
+            onClick={() => setScreen("generator")}
+          />
 
-      <LaneCard
-        title="YouTube Expansion"
-        desc="Titles · Clips · Structure"
-        onClick={() => setScreen("youtube")}
-      />
-    </AppShell>
-  );
-}
-
-function Generator({ title }) {
-  const [input, setInput] = useState("");
-  const [output, setOutput] = useState(null);
-
-  const generate = async () => {
-    const res = await callClaude(
-      "You are Leon Charles. Direct. No fluff.",
-      input || "Give a strong idea"
-    );
-    setOutput(res);
-  };
-
-  return (
-    <AppShell>
-      <Card>
-        <h2>{title}</h2>
-
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Enter topic..."
-          style={{
-            width: "100%",
-            height: 120,
-            background: BG,
-            border: `1px solid ${BORDER}`,
-            borderRadius: 10,
-            padding: 12,
-            color: TEXT,
-          }}
-        />
-
-        <Button text="Generate" onClick={generate} />
-      </Card>
-
-      {output && (
-        <Card>
-          <pre>{JSON.stringify(output, null, 2)}</pre>
-        </Card>
+          <LaneCard
+            title="YouTube Expansion"
+            desc="Titles · Clips · Structure"
+            onClick={() => setScreen("generator")}
+          />
+        </>
       )}
-    </AppShell>
-  );
-}
 
-// ================= ROOT =================
-export default function App() {
-  const [screen, setScreen] = useState("home");
+      {/* GENERATOR */}
+      {screen === "generator" && (
+        <>
+          <Card>
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Enter topic..."
+              style={{
+                width: "100%",
+                height: 140,
+                background: "#0a0b0f",
+                border: `1px solid ${BORDER}`,
+                borderRadius: 14,
+                padding: 14,
+                color: TEXT,
+                fontSize: 14,
+              }}
+            />
 
-  return (
-    <>
-      <style>{GLOBAL_STYLE}</style>
+            <Button text="Generate" onClick={generate} />
+          </Card>
 
-      {screen === "home" && <HomeScreen setScreen={setScreen} />}
-      {screen === "unfiltered" && <Generator title="Unfiltered" />}
-      {screen === "coaching" && <Generator title="Coaching" />}
-      {screen === "copy" && <Generator title="Copy System" />}
-      {screen === "youtube" && <Generator title="YouTube Expansion" />}
-    </>
+          {loading && (
+            <p style={{ color: MUTED }}>Generating...</p>
+          )}
+
+          {output && !output.error && (
+            <Card>
+              <pre style={{ whiteSpace: "pre-wrap" }}>
+                {JSON.stringify(output, null, 2)}
+              </pre>
+            </Card>
+          )}
+
+          {output?.error && (
+            <p style={{ color: RED }}>{output.error}</p>
+          )}
+
+          <Button text="← Back" onClick={() => setScreen("home")} />
+        </>
+      )}
+    </div>
   );
 }
