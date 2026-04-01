@@ -1179,7 +1179,7 @@ export default function App() {
       {screen === "generator" && (
         <GeneratorScreen
           lane={lane}
-          onBack={() => setScreen("home")}
+          onBack={() => setScreen("home")} 
           onOutput={handleOutput}
           hasLast={!!output}
         />
